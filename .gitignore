@@ -1,0 +1,5 @@
+archives/*
+keys/*
+profiles/*
+!profiles/default.yml
+tmp

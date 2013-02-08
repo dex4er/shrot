@@ -1,0 +1,35 @@
+#!/bin/sh
+# Copyright © 2013  Piotr Roszatycki <dexter@debian.org>
+#
+# schroot is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# schroot is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+#####################################################################
+
+set -e
+
+. "$SETUP_DATA_DIR/common-data"
+. "$SETUP_DATA_DIR/common-functions"
+. "$SETUP_DATA_DIR/common-config"
+
+if [ $STAGE = "setup-start" ] || [ $STAGE = "setup-recover" ]; then
+
+    info "Setting mtab file to ${CHROOT_NAME}"
+
+    if [ -f "${CHROOT_PATH}/etc/mtab" ] && ! [ -s "${CHROOT_PATH}/etc/mtab" ]; then
+        echo "rootfs / rootfs rw 0 0" > "${CHROOT_PATH}/etc/mtab"
+    fi
+
+fi
+

@@ -1,0 +1,3 @@
+#!/bin/sh
+initctl.distrib version >/dev/null && exec initctl.distrib "$@"
+exit 0
