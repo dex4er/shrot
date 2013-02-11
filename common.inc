@@ -77,22 +77,20 @@ read_profile() {
     nameserver=`config nameserver 8.8.8.8 8.8.4.4`
 
     instance=`config instance 0`
-    ssh_port=`config ssh_port $((2222 + $instance))`
+    ssh_port=`config ssh_port $((2220 + $instance))`
 
-    first_system_uid=`config first_system_uid 200`
-    first_system_gid=`config first_system_gid 200`
+    first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
+    first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
+
+    role=`config role repacked`
 
     export http_proxy=`config http_proxy $http_proxy`
     export https_proxy=`config https_proxy $https_proxy`
 
-    shrot=$vendor-$suite-$arch
+    shrot=$vendor-$suite-$arch-$role
 
-    if [ "$instance" -gt 0 ]; then
-        shrot=$shrot-inst$instance
-        test "$ssh_port" = $(( 2222 + $instance )) || shrot=$shrot-ssh$ssh_port
-    else
-        test "$ssh_port" = 2222 || shrot=$shrot-ssh$ssh_port
-    fi
+    test "$instance" = 0 || shrot=$shrot-inst$instance
+    test "$ssh_port" = $(( 2220 + $instance )) || shrot=$shrot-ssh$ssh_port
 
     archive=archives/shrot-$shrot.tgz
 }

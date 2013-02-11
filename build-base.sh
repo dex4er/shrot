@@ -10,7 +10,7 @@
 
 gain_root "$@"
 
-read_profile "$@"
+read_profile profiles/base.yml "$@"
 
 info "Building shrot $shrot"
 
@@ -29,28 +29,9 @@ $personality $debootstrap \
 run test -f /usr/share/adduser/adduser.conf || run sh -c 'dpkg-deb -x /var/cache/apt/archives/adduser_*.deb /'
 run cp /usr/share/adduser/adduser.conf /etc/adduser.conf
 
-if [ "$instance" -gt 0 ]; then
-    run sh -c 'dpkg-deb -x /var/cache/apt/archives/base-passwd_*.deb /'
-    run cat /usr/share/base-passwd/passwd.master | awk -F: \
-        'BEGIN { OFS=":" } { if ($3 > 0 && $3 < 10000) { $3 += 10000; $4 += 10000 };  print }' \
-        | write /etc/passwd
-    run cat /usr/share/base-passwd/group.master | awk -F: \
-        'BEGIN { OFS=":" } { if ($3 > 0 && $3 < 10000) { $3 += 10000 };  print }' \
-        | write /etc/group
-    run sed -i s/FIRST_SYSTEM_UID=[0-9]*/FIRST_SYSTEM_UID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
-    run sed -i s/LAST_SYSTEM_UID=[0-9]*/LAST_SYSTEM_UID=$(( $instance * 10000 + 999 ))/ /etc/adduser.conf
-    run sed -i s/FIRST_SYSTEM_GID=[0-9]*/FIRST_SYSTEM_GID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
-    run sed -i s/LAST_SYSTEM_GID=[0-9]*/LAST_SYSTEM_GID=$(( $instance * 10000 + 999 ))/ /etc/adduser.conf
-    run sed -i s/FIRST_UID=[0-9]*/FIRST_UID=$(( $instance * 10000 + 1000 ))/ /etc/adduser.conf
-    run sed -i s/LAST_UID=[0-9]*/FIRST_UID=$(( $instance * 10000 + 9999 ))/ /etc/adduser.conf
-    run sed -i s/FIRST_GID=[0-9]*/FIRST_GID=$(( $instance * 10000 + 1000 ))/ /etc/adduser.conf
-    run sed -i s/LAST_GID=[0-9]*/FIRST_GID=$(( $instance * 10000 + 9999 ))/ /etc/adduser.conf
-    run sed -i s/USERS_GID=[0-9]*/USERS_GID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
-else
-    run sed -i s/FIRST_SYSTEM_UID=[0-9]*/FIRST_SYSTEM_UID=$first_system_uid/ /etc/adduser.conf
-    run sed -i s/FIRST_SYSTEM_GID=[0-9]*/FIRST_SYSTEM_GID=$first_system_gid/ /etc/adduser.conf
-    run sed -i s/USERS_GID=[0-9]*/USERS_GID=$first_system_gid/ /etc/adduser.conf
-fi
+run sed -i s/FIRST_SYSTEM_UID=[0-9]*/FIRST_SYSTEM_UID=$first_system_uid/ /etc/adduser.conf
+run sed -i s/FIRST_SYSTEM_GID=[0-9]*/FIRST_SYSTEM_GID=$first_system_gid/ /etc/adduser.conf
+run sed -i s/USERS_GID=[0-9]*/USERS_GID=$first_system_gid/ /etc/adduser.conf
 
 # additional tweaks
 run mkdir -p /run/shm
