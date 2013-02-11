@@ -4,7 +4,9 @@
 
 gain_root "$@"
 
-read_profile profiles/base.yml "$@"
+role=base
+
+read_profiles "$@"
 
 info "Entering shrot $shrot"
 
@@ -27,8 +29,11 @@ run /etc/init.d/ssh stop
 
 umount_vfs
 
-# reread profile without base.yml
-read_profile "$@"
+# reread profile without base
+
+role=
+
+read_profiles "$@"
 
 # repack archive
 run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive

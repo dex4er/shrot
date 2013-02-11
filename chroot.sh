@@ -4,7 +4,7 @@
 
 gain_root "$@"
 
-read_profile "$@"
+read_profiles "$@"
 
 info "Entering shrot $shrot"
 

@@ -10,7 +10,9 @@
 
 gain_root "$@"
 
-read_profile profiles/base.yml "$@"
+role=base
+
+read_profiles "$@"
 
 info "Building shrot $shrot"
 

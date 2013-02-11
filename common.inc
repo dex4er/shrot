@@ -17,7 +17,8 @@ config() {
     k=$1
     shift
 
-    for p in $profile_yml; do
+    for p in $profiles; do
+        test -f "profiles/$p.yml" && p="profiles/$p.yml"
         test -f "profiles/$p" && p="profiles/$p"
         test -f "$p" || die "profile file $p not found"
         if v=`grep "^$k: " "$p"`; then
@@ -59,10 +60,10 @@ gain_root() {
     test `id -u` = 0 || exec sudo $0 "$@" || die 'sudo failed; root privileges are required'
 }
 
-read_profile() {
-    profile_yml="$@ profiles/default.yml"
-
-    default_yml="profiles/default.yml"
+read_profiles() {
+    profiles="$*"
+    test -f profiles/default.yml && profiles="$profiles default"
+    config test >/dev/null
 
     # get config variables
     debootstrap=`config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)`
@@ -82,7 +83,7 @@ read_profile() {
     first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
     first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
 
-    role=`config role repacked`
+    role=${role:-`config role base`}
 
     export http_proxy=`config http_proxy $http_proxy`
     export https_proxy=`config https_proxy $https_proxy`
