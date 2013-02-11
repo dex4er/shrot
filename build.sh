@@ -4,87 +4,18 @@
 #
 # (c) 2013 Piotr Roszatycki <piotr.roszatycki@gmail.com>
 
-die() {
-    echo "E: $*" 1>&2
-    exit 1
-}
+. $(dirname $0)/common.inc
 
-if [ -n "$1" ]; then
-    profile_yml="$1"
-    test -f "$profile_yml" || profile_yml="profiles/$1"
-    test -f "$profile_yml" || die "profile file $1 not found"
-fi
-
-default_yml="profiles/default.yml"
-
-
-config() {
-    k=$1
-    shift
-
-    if [ -n "$profile_yml" ] && [ -f "$profile_yml" ] && grep -qs "^$k: " "$profile_yml"; then
-        eval echo `grep "^$k: " "$profile_yml" | sed 's/^[a-z_]*: //'`
-    elif [ -f "$default_yml" ] && grep -qs "^$k: " "$default_yml"; then
-        eval echo `grep "^$k: " "$default_yml" | sed 's/^[a-z_]*: //'`
-    else
-        echo "$@"
-    fi
-}
-
-mirror_url() {
-    case "$1" in
-        Debian)
-            echo http://ftp.debian.org/debian/
-            ;;
-        Ubuntu)
-            echo http://archive.ubuntu.com/ubuntu/
-            ;;
-        *)
-            die "Unknown Vendor"
-    esac
-}
-
-run() {
-    DEBIAN_FRONTEND=noninteractive \
-    HOME=/dev/shm \
-    LANG=C \
-    LC_ALL=C \
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    $personality chroot $target "$@"
-}
-
-write() {
-    run tee "$1" >/dev/null
-}
-
-# generate ssh keys if missing
 ./generate-keys.sh
 
-# gain root privileges
-test `id -u` = 0 || exec sudo $0 "$@" || die 'sudo failed; root privileges are required'
+gain_root "$@"
+
+read_profile "$@"
+
+info "Building shrot $shrot"
 
 # temporary directory
 target=`mktemp -d -t shrot-XXXXXX` || die 'mktemp failed'
-
-# get config variables
-debootstrap=`config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)`
-arch=`config arch $(dpkg --print-architecture 2>/dev/null || i386)`
-personality=`config personality ""`
-variant=`config variant ""`
-vendor=`config vendor Debian`
-suite=`config suite stable`
-
-mirror=`config mirror $(mirror_url $vendor)`
-
-nameserver=`config nameserver 8.8.8.8 8.8.4.4`
-ssh_port=`config ssh_port 2222`
-first_system_uid=`config first_system_uid 200`
-first_system_gid=`config first_system_gid 200`
-
-shrot=$vendor-$suite-$arch
-
-export http_proxy=`config http_proxy $http_proxy`
-export https_proxy=`config https_proxy $https_proxy`
 
 # debootstrap 1st stage
 $personality $debootstrap \
@@ -97,7 +28,29 @@ $personality $debootstrap \
 # tweak uids and gids
 run test -f /usr/share/adduser/adduser.conf || run sh -c 'dpkg-deb -x /var/cache/apt/archives/adduser_*.deb /'
 run cp /usr/share/adduser/adduser.conf /etc/adduser.conf
-run sed -i -e s/FIRST_SYSTEM_UID=100/FIRST_SYSTEM_UID=$first_system_uid/ -e s/FIRST_SYSTEM_GID=100/FIRST_SYSTEM_GID=$first_system_gid/ /etc/adduser.conf
+
+if [ "$instance" -gt 0 ]; then
+    run sh -c 'dpkg-deb -x /var/cache/apt/archives/base-passwd_*.deb /'
+    run cat /usr/share/base-passwd/passwd.master | awk -F: \
+        'BEGIN { OFS=":" } { if ($3 > 0 && $3 < 10000) { $3 += 10000; $4 += 10000 };  print }' \
+        | write /etc/passwd
+    run cat /usr/share/base-passwd/group.master | awk -F: \
+        'BEGIN { OFS=":" } { if ($3 > 0 && $3 < 10000) { $3 += 10000 };  print }' \
+        | write /etc/group
+    run sed -i s/FIRST_SYSTEM_UID=[0-9]*/FIRST_SYSTEM_UID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
+    run sed -i s/LAST_SYSTEM_UID=[0-9]*/LAST_SYSTEM_UID=$(( $instance * 10000 + 999 ))/ /etc/adduser.conf
+    run sed -i s/FIRST_SYSTEM_GID=[0-9]*/FIRST_SYSTEM_GID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
+    run sed -i s/LAST_SYSTEM_GID=[0-9]*/LAST_SYSTEM_GID=$(( $instance * 10000 + 999 ))/ /etc/adduser.conf
+    run sed -i s/FIRST_UID=[0-9]*/FIRST_UID=$(( $instance * 10000 + 1000 ))/ /etc/adduser.conf
+    run sed -i s/LAST_UID=[0-9]*/FIRST_UID=$(( $instance * 10000 + 9999 ))/ /etc/adduser.conf
+    run sed -i s/FIRST_GID=[0-9]*/FIRST_GID=$(( $instance * 10000 + 1000 ))/ /etc/adduser.conf
+    run sed -i s/LAST_GID=[0-9]*/FIRST_GID=$(( $instance * 10000 + 9999 ))/ /etc/adduser.conf
+    run sed -i s/USERS_GID=[0-9]*/USERS_GID=$(( $instance * 10000 + 100 ))/ /etc/adduser.conf
+else
+    run sed -i s/FIRST_SYSTEM_UID=[0-9]*/FIRST_SYSTEM_UID=$first_system_uid/ /etc/adduser.conf
+    run sed -i s/FIRST_SYSTEM_GID=[0-9]*/FIRST_SYSTEM_GID=$first_system_gid/ /etc/adduser.conf
+    run sed -i s/USERS_GID=[0-9]*/USERS_GID=$first_system_gid/ /etc/adduser.conf
+fi
 
 # additional tweaks
 run mkdir -p /run/shm
@@ -108,10 +61,7 @@ echo $shrot | write /etc/debian_chroot
 run /debootstrap/debootstrap --second-stage
 
 # mount vfs
-run mount -t proc proc /proc
-run mount -t sysfs sysfs /sys
-run mount -t tmpfs tmpfs /dev/shm
-run mount -o gid=5,mode=620,ptmxmode=000 -t devpts devpts /dev/pts
+mount_vfs
 
 # enable networking
 echo '# This file is empty' | write /etc/network/interfaces
@@ -189,18 +139,10 @@ run apt-get clean
 run rm -rf /debootstrap
 
 # umount vfs
-run umount /dev/pts
-run umount /dev/shm
-run umount /sys
-run umount /proc
+umount_vfs
 
-# make archive
-test "$first_system_uid" = 200 || shrot=$shrot-uid$first_system_uid
-test "$first_system_gid" = 200 || shrot=$shrot-gid$first_system_gid
-test "$ssh_port" = 2222 || shrot=$shrot-ssh$ssh_port
-
-result=archives/shrot-$shrot.tgz
-run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $result
+# archive
+run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive
 echo
 
 # clean up
