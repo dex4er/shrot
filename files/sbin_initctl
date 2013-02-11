@@ -1,3 +1,10 @@
 #!/bin/sh
-initctl.distrib version >/dev/null && exec initctl.distrib "$@"
-exit 0
+initctl.distrib version >/dev/null || exit 0
+cmd=`basename "$0"`
+case "$cmd" in
+    start|stop|reload|restart|status)
+        exec initctl.distrib $cmd "$@"
+        ;;
+    *)
+        exec initctl.distrib "$@"
+esac

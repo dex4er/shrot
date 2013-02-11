@@ -4,7 +4,7 @@
 
 gain_root "$@"
 
-read_profile profile/base.yml "$@"
+read_profile profiles/base.yml "$@"
 
 info "Entering shrot $shrot"
 
@@ -21,7 +21,7 @@ mount_vfs
 
 run /etc/init.d/ssh start
 
-./ansible-inst0.sh -m ping
+./ansible-shrot.sh -m ping
 
 run /etc/init.d/ssh stop
 

@@ -20,7 +20,7 @@ mount_vfs
 
 run /etc/init.d/ssh start
 
-./ansible-inst0.sh -m ping
+./ansible-shrot.sh -m ping
 
 run bash -i
 

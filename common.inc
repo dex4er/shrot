@@ -77,7 +77,7 @@ read_profile() {
     nameserver=`config nameserver 8.8.8.8 8.8.4.4`
 
     instance=`config instance 0`
-    ssh_port=`config ssh_port $((2220 + $instance))`
+    export ssh_port=`config ssh_port $((2220 + $instance))`
 
     first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
     first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
