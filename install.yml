@@ -1,15 +1,6 @@
 ---
 - hosts: all
 
-  vars_files:
-    - profiles/default.yml
-    - profiles/Ubuntu-precise-i386.yml
-    - profiles/phpmyadmin.yml
-
-  vars:
-    - shrot: $vendor-$suite-$arch-$role
-    - shrot_home: /home/shrot
-
   tasks:
 
     - name: shutdown old shrot

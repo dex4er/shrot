@@ -109,6 +109,11 @@ read_profiles() {
 
     archive=archives/shrot-$shrot.tgz
     archive_base=archives/shrot-$shrot_base.tgz
+
+    host=`config host localhost`
+    export remote_port=`config remote_port 22`
+    export remote_user=`config remote_user root`
+    export ask_sudo_pass=`config ask_sudo_pass ''`
 }
 
 mount_vfs() {
