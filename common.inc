@@ -88,17 +88,19 @@ read_profiles() {
     first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
     first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
 
-    role=${role:-`config role base`}
+    role=${role:-`config role repacked`}
 
     export http_proxy=`config http_proxy $http_proxy`
     export https_proxy=`config https_proxy $https_proxy`
 
     shrot=$vendor-$suite-$arch-$role
+    shrot_base=$vendor-$suite-$arch-base
 
     test "$instance" = 0 || shrot=$shrot-inst$instance
     test "$ssh_port" = $(( 2220 + $instance )) || shrot=$shrot-ssh$ssh_port
 
     archive=archives/shrot-$shrot.tgz
+    archive_base=archives/shrot-$shrot_base.tgz
 }
 
 mount_vfs() {

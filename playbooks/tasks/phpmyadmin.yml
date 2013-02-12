@@ -5,6 +5,5 @@
     apt: pkg=phpmyadmin
 
   - name: configure apache2
-    #shell: ln -sf ../../phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
     file: src=/etc/phpmyadmin/apache.conf dest=/etc/apache2/conf.d/phpmyadmin.conf state=link
     notify: restart apache2
