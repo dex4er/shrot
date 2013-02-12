@@ -104,6 +104,8 @@ read_profiles() {
     shrot=$vendor-$suite-$arch-$role
     shrot_base=$vendor-$suite-$arch-base
 
+    shrot_home=`config shrot_home /srv/shrot`
+
     test "$instance" = 0 || shrot=$shrot-inst$instance
     test "$ssh_port" = $(( 2220 + $instance )) || shrot=$shrot-ssh$ssh_port
 
