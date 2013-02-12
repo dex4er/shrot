@@ -27,13 +27,15 @@ run /etc/init.d/ssh start
 
 run /etc/init.d/ssh stop
 
-umount_vfs
-
 # reread profile without base
 
 role=
 
 read_profiles "$@"
+
+echo $shrot | write /etc/debian_chroot
+
+umount_vfs
 
 # repack archive
 run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive

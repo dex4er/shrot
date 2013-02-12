@@ -1,10 +1,39 @@
 #!/bin/sh
-initctl.distrib version >/dev/null || exit 0
-cmd=`basename "$0"`
-case "$cmd" in
+
+arg0="$(basename "$0")"
+
+case "$arg0" in
     start|stop|reload|restart|status)
-        exec initctl.distrib $cmd "$@"
+        exec initctl "$arg0" "$@"
         ;;
     *)
-        exec initctl.distrib "$@"
+        argv="$@"
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                -*)
+                    shift
+                    ;;
+                *)
+                    cmd="$1"
+                    shift
+                    break
+            esac
+        done
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                -*)
+                    shift
+                    ;;
+                *)
+                    job="$1"
+                    shift
+                    break
+            esac
+        done
+        if [ -x /etc/init.d/$job.sysv ]; then
+            exec /etc/init.d/$job.sysv $cmd "$@"
+        else
+            initctl.distrib version >/dev/null || exit 0
+            exec initctl.distrib $argv
+        fi
 esac

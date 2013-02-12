@@ -56,6 +56,11 @@ write() {
     run tee "$1" >/dev/null
 }
 
+write_x() {
+    write "$1"
+    run chmod +x "$1"
+}
+
 gain_root() {
     test `id -u` = 0 || exec sudo $0 "$@" || die 'sudo failed; root privileges are required'
 }

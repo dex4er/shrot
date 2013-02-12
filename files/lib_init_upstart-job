@@ -1,0 +1,16 @@
+#!/bin/sh
+
+arg0="$(basename "$0")"
+job="${arg0%.sh}"
+
+case "$job" in
+    upstart-job)
+        exec /lib/init/upstart-job.sh "$@"
+        ;;
+    *)
+        if [ -x /etc/init.d/$job.sysv ]; then
+            exec /etc/init.d/$job.sysv "$@"
+        else
+            exec /lib/init/upstart-job.sh "$job" "$@"
+        fi
+esac

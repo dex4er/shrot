@@ -57,10 +57,11 @@ run rm -f /etc/resolvconf/resolv.conf.d/original
 # configure apt
 echo "deb $mirror $suite main" | write /etc/apt/sources.list
 
-# wrapper for initctl
+# wrapper for initctl and upstart-job
 run dpkg-divert --rename /sbin/initctl
-cat files/sbin_initctl | write /sbin/initctl
-run chmod +x /sbin/initctl
+cat files/sbin_initctl | write_x /sbin/initctl
+run dpkg-divert --divert /lib/init/upstart-job.sh --rename /lib/init/upstart-job
+cat files/lib_init_upstart-job | write_x /lib/init/upstart-job
 
 # clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
 run sh -c 'rm -f /etc/rc[02].d/[SK]*'
@@ -74,20 +75,12 @@ run update-rc.d -f sudo remove >/dev/null
 run update-rc.d sudo start 75 2 3 4 5 . >/dev/null
 
 # init.d rsyslog
-if [ -h $target/etc/init.d/rsyslog ]; then
-    run rm -f /etc/init.d/rsyslog
-    cat files/etc_init.d_rsyslog | write /etc/init.d/rsyslog
-    run chmod +x /etc/init.d/rsyslog
-fi
+cat files/etc_init.d_rsyslog | write_x /etc/init.d/rsyslog.sysv
 run update-rc.d -f rsyslog remove >/dev/null
 run update-rc.d rsyslog start 10 2 3 4 5 . start 30 0 6 . stop 90 1 . >/dev/null
 
 # init.d cron
-if [ -h $target/etc/init.d/cron ]; then
-    run rm -f /etc/init.d/cron
-    cat files/etc_init.d_cron | write /etc/init.d/cron
-    run chmod +x /etc/init.d/cron
-fi
+cat files/etc_init.d_cron | write_x /etc/init.d/cron.sysv
 run update-rc.d -f cron remove >/dev/null
 run update-rc.d cron start 89 2 3 4 5 . >/dev/null
 
@@ -102,8 +95,7 @@ run update-rc.d -f ssh remove >/dev/null
 run update-rc.d ssh start 16 2 3 4 5 . stop 90 0 6 . >/dev/null
 
 # installing rc.chroot
-cat files/etc_init.d_rc.chroot | write /etc/init.d/rc.chroot
-run chmod +x /etc/init.d/rc.chroot
+cat files/etc_init.d_rc.chroot | write_x /etc/init.d/rc.chroot
 
 # configure ssh server
 run sed -i -e "s/^Port [0-9]*$/Port $ssh_port/" /etc/ssh/sshd_config
