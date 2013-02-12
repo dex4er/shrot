@@ -1,0 +1,7 @@
+---
+  - name: install init script for mysql
+    copy: src=files/etc_init.d_mysql dest=/etc/init.d/mysql.sysv owner=root group=root mode=755
+
+  - name: install mysql
+    apt: pkg=mysql-server
+

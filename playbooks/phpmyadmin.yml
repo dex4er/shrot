@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  tasks:
+    - include: tasks/ubuntu_universe.yml
+    - include: tasks/phpmyadmin.yml
+  handlers:
+    - include: handlers/apache2.yml

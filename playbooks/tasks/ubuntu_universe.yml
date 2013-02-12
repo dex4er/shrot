@@ -1,0 +1,6 @@
+---
+  - name: add Ubuntu universe repository
+    template: src=templates/etc_apt_sources.list.d_ubuntu-universe.list.j2 dest=/etc/apt/sources.list.d/ubuntu-universe.list
+
+  - name: refresh APT cache
+    apt: update_cache=yes
