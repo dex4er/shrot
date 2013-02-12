@@ -1,4 +1,0 @@
-# This is a configuration file for /etc/init.d/schroot-sessions
-
-# List of schroot sessions which are started after reboot and ended at shutdown
-SESSIONS=""

@@ -5,3 +5,9 @@
   - name: install mysql
     apt: pkg=mysql-server
 
+  - name: deactivate init script for mysql
+    command: update-rc.d -f mysql remove
+
+  - name: reactivate init script for mysql
+    command: update-rc.d mysql defaults 19 21
+

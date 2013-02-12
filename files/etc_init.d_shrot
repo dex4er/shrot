@@ -1,14 +1,14 @@
 #! /bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          schroot-sessions
+# Provides:          shrot
 # Required-Start:    $local_fs $syslog $network $remote_fs
 # Required-Stop:     $local_fs $syslog $network $remote_fs
 # Should-Start:
 # Should-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start/stop schroot sessions
+# Short-Description: Start/stop shrot sessions
 # Description:       Activate any persistent sessions after a reboot.
 #                    Setup scripts will be run to mount filesystems and
 #                    bring the chroot back to a working state.
@@ -34,11 +34,13 @@
 
 SCHROOT=/usr/bin/schroot
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-NAME=schroot-sessions
+NAME=shrot
 
 . /lib/lsb/init-functions
 
 test -x $SCHROOT || exit 0
+
+SHROTS=`schroot --list --all-chroots --quiet | grep '^chroot:shrot-' | sed 's/^chroot:shrot-//'`
 
 # Include schroot defaults if available
 if [ -f "/etc/default/$NAME" ] ; then
@@ -50,11 +52,11 @@ set -e
 start_sessions()
 {
     log_daemon_msg "Starting shrot sessions"
-    for chroot in ${2:-$SESSIONS}
+    for shrot in ${@:-$SHROTS}
       do
-      if ! schroot --list --all-sessions --quiet | grep -qs "^session:$chroot$" ; then
-        $SCHROOT --begin-session --chroot=$chroot --session-name $chroot || true
-        log_progress_msg "$chroot"
+      if ! schroot --list --all-sessions --quiet | grep -qs "^session:shrot-$shrot$" ; then
+        $SCHROOT --begin-session --chroot=shrot-$shrot --session-name shrot-$shrot || true
+        log_progress_msg "$shrot"
       fi
     done
     log_end_msg 0
@@ -63,11 +65,11 @@ start_sessions()
 end_sessions()
 {
     log_daemon_msg "Ending schroot sessions"
-    for chroot in ${2:-$SESSIONS}
+    for shrot in ${@:-$SHROTS}
       do
-      if schroot --list --all-sessions --quiet | grep -qs "^session:$chroot$" ; then
-        $SCHROOT --chroot=session:$chroot --end-session || true
-        log_progress_msg "$chroot"
+      if schroot --list --all-sessions --quiet | grep -qs "^session:shrot-$shrot$" ; then
+        $SCHROOT --chroot=session:shrot-$shrot --end-session || true
+        log_progress_msg "$shrot"
       fi
     done
     log_end_msg 0
@@ -75,18 +77,20 @@ end_sessions()
 
 case "$1" in
     start|restart|force-reload)
-        start_sessions
-	;;
+        shift
+        start_sessions "$@"
+        ;;
     stop)
-        end_sessions
-	;;
+        shift
+        end_sessions "$@"
+        ;;
     status)
-	;;
+        ;;
     *)
-	N=/etc/init.d/$NAME
-	echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
-	exit 1
-	;;
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
+        exit 1
+        ;;
 esac
 
 exit 0
