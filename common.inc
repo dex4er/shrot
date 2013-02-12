@@ -18,12 +18,20 @@ config() {
     shift
 
     for p in $profiles; do
-        test -f "profiles/$p.yml" && p="profiles/$p.yml"
-        test -f "profiles/$p" && p="profiles/$p"
-        test -f "$p" || die "profile file $p not found"
-        if v=`grep "^$k: " "$p"`; then
-            eval echo `echo $v | sed 's/^[a-z_]*: //'`
-            return
+        if ! [ "$p" = "${p%=*}" ]; then
+            if [ "${p%=*}" = "$k" ]; then
+                v="${p#*=}"
+                eval echo `echo $v | sed 's/^[a-z_]*: //'`
+                return
+            fi
+        else
+            test -f "profiles/$p.yml" && p="profiles/$p.yml"
+            test -f "profiles/$p" && p="profiles/$p"
+            test -f "$p" || die "profile file $p not found"
+            if v=`grep "^$k: " "$p"`; then
+                eval echo `echo $v | sed 's/^[a-z_]*: //'`
+                return
+            fi
         fi
     done
 
