@@ -2,6 +2,7 @@
 
 arg0="$0"
 arg0="${arg0#/etc/rc?.d/[SK][0-9][0-9]}"
+arg0="$(basename "$arg0")"
 job="${arg0%.sh}"
 
 case "$job" in
