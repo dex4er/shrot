@@ -28,7 +28,7 @@ config() {
             if [ -f profiles/$p.yml ]; then
                 p=profiles/$p.yml
             elif [ -f profiles/*/$p.yml ]; then
-                p=profiles/*/$p.yml
+                p=`echo profiles/*/$p.yml`
             fi
             test -f "$p" || die "profile file $p not found"
             if v=`grep "^$k: " "$p"`; then
