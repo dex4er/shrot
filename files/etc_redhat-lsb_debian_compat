@@ -1,0 +1,4 @@
+. /etc/init.d/functions
+log_daemon_msg() { echo -n $"$@"; }
+log_end_msg() { [ $1 -eq 0 ] && success || failure; }
+log_progress_msg() { echo -n $" $@"; }

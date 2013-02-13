@@ -25,6 +25,14 @@
     - name: install shrot init script
       copy: src=files/etc_init.d_shrot dest=/etc/init.d/shrot mode=0755
 
+    - name: install Debian's LSB compatibility wrappers
+      copy: src=etc_redhat-lsb_debian_compat dest=/etc/redhat-lsb/debian_compat mode=0644
+      when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+
+    - name: create default shrot init configuration
+      shell: echo '. /etc/redhat-lsb/debian_compat' > /etc/default/shrot creates=/etc/default/shrot
+      when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+
     - name: install schroot configuration
       template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/$shrot.conf
 

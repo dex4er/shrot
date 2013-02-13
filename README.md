@@ -34,7 +34,8 @@ This is system where shrot archive is unpacked and running.
  * sudo
  * schroot >= 1.6
  * python2 >= 2.6
- * pyyaml
+ * python-simplejson
+ * python-yaml
 
 
 Usage
