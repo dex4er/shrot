@@ -85,6 +85,12 @@ case "$1" in
         end_sessions "$@"
         ;;
     status)
+        if schroot --list --all-sessions --quiet | grep -qs '^session:shrot-'; then
+            schroot --list --all-sessions --quiet | grep '^session:shrot-' | sed 's/^session:shrot-//'
+            exit 0
+        else
+            exit 3
+        fi
         ;;
     *)
         N=/etc/init.d/$NAME
