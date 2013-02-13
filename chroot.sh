@@ -6,7 +6,7 @@ gain_root "$@"
 
 read_profiles "$@"
 
-target=`mktemp -d -t shrot-XXXXXX` || die 'mktemp failed'
+create_tmpdir
 
 test -f $archive || die "shrot archive $archive not found"
 
@@ -28,5 +28,4 @@ run /etc/init.d/ssh stop
 
 umount_vfs
 
-# clean up
-rm -rf $target
+remove_tmpdir

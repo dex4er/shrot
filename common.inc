@@ -10,6 +10,8 @@ info() {
 
 die() {
     echo "E: $*" 1>&2
+    umount_vfs >/dev/null 2>&1
+    remove_tmpdir
     exit 1
 }
 
@@ -99,7 +101,7 @@ read_profiles() {
     first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
     first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
 
-    role=${role:-`config role repacked`}
+    role=${role:-`config role base`}
 
     export http_proxy=`config http_proxy $http_proxy`
     export https_proxy=`config https_proxy $https_proxy`
@@ -129,8 +131,20 @@ mount_vfs() {
 }
 
 umount_vfs() {
-    run umount /dev/pts
-    run umount /dev/shm
-    run umount /sys
-    run umount /proc
+    if [ -n "$target" ] && [ -x "$target/bin/umount" ]; then
+        run umount /dev/pts
+        run umount /dev/shm
+        run umount /sys
+        run umount /proc
+    fi
+}
+
+create_tmpdir() {
+    target=`mktemp -d -t shrot-XXXXXX` || die 'mktemp failed'
+}
+
+remove_tmpdir() {
+    if [ -n "$target" ] && ! [ "$target" = "/" ] && [ -d "$target" ]; then
+        rm -rf "$target"
+    fi
 }

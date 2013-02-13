@@ -6,9 +6,14 @@ gain_root "$@"
 
 read_profiles "$@"
 
+if [ "$role" = "base" ]; then
+    role=repacked
+    read_profiles "$@"
+fi
+
 test -f playbooks/$role.yml || die "playbook for role $role not found"
 
-target=`mktemp -d -t shrot-XXXXXX` || die 'mktemp failed'
+create_tmpdir
 
 test -f $archive_base || die "shrot archive $archive_base not found"
 
@@ -35,5 +40,4 @@ umount_vfs
 run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive
 echo
 
-# clean up
-rm -rf $target
+remove_tmpdir

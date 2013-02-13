@@ -10,14 +10,11 @@
 
 gain_root "$@"
 
-role=base
-
 read_profiles "$@"
 
 info "Building shrot $shrot"
 
-# temporary directory
-target=`mktemp -d -t shrot-XXXXXX` || die 'mktemp failed'
+create_tmpdir
 
 # debootstrap 1st stage
 $personality $debootstrap \
@@ -121,4 +118,4 @@ run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=tt
 echo
 
 # clean up
-rm -rf $target
+remove_tmpdir
