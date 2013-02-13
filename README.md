@@ -11,3 +11,66 @@ schroot command.
 
 The shrot recyclable environment is a basic Debian/Ubuntu distribution with
 own ssh server. The environment works with ansible - the orchestration tool.
+
+
+Requirements
+============
+
+Build system
+------------
+
+This is system where short archive is made.
+
+ * debootstrap
+ * sudo
+ * ansible
+
+Host system
+-----------
+
+This is system where shrot archive is unpacked and running.
+
+ * ssh server
+ * sudo
+ * schroot >= 1.6
+ * python2 >= 2.6
+ * pyyaml
+
+
+Usage
+=====
+
+SSH keys
+--------
+
+    ./generate-keys.sh
+
+
+Configuration
+-------------
+
+profiles/Ubuntu-precise-i386:
+
+    ---
+    vendor: Ubuntu
+    suite: precise
+    arch: i386
+    personality: linux32
+    mirror: http://archive.ubuntu.com/ubuntu/
+
+
+
+Build base archive
+------------------
+
+    ./build-base.sh Ubuntu-precise-i386
+
+Build role archive
+------------------
+
+    ./build-role.sh Ubuntu-precise-i386 role=phpmyadmin
+
+Install role archive
+--------------------
+
+    ./install.sh host role=phpmyadmin
