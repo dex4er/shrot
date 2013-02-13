@@ -1,6 +1,3 @@
 ---
 vendor: Ubuntu
-suite: precise
-arch: i386
-personality: linux32
 mirror: http://archive.ubuntu.com/ubuntu/

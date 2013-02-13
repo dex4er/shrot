@@ -45,32 +45,17 @@ SSH keys
 
     ./generate-keys.sh
 
-
-Configuration
--------------
-
-profiles/Ubuntu-precise-i386:
-
-    ---
-    vendor: Ubuntu
-    suite: precise
-    arch: i386
-    personality: linux32
-    mirror: http://archive.ubuntu.com/ubuntu/
-
-
-
 Build base archive
 ------------------
 
-    ./build-base.sh Ubuntu-precise-i386
+    ./build-base.sh Ubuntu precise i386
 
 Build role archive
 ------------------
 
-    ./build-role.sh Ubuntu-precise-i386 role=phpmyadmin
+    ./build-role.sh Ubuntu precise i386 phpmyadmin
 
 Install role archive
 --------------------
 
-    ./install.sh host role=phpmyadmin
+    ./install.sh host phpmyadmin
