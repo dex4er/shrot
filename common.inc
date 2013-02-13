@@ -25,8 +25,11 @@ config() {
                 return
             fi
         else
-            test -f "profiles/$p.yml" && p="profiles/$p.yml"
-            test -f "profiles/$p" && p="profiles/$p"
+            if [ -f profiles/$p.yml ]; then
+                p=profiles/$p.yml
+            elif [ -f profiles/*/$p.yml ]; then
+                p=profiles/*/$p.yml
+            fi
             test -f "$p" || die "profile file $p not found"
             if v=`grep "^$k: " "$p"`; then
                 eval echo `echo $v | sed 's/^[a-z_]*: //'`
