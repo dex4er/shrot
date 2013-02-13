@@ -10,3 +10,9 @@
 
   - name: configure SSH port to gitolite
     lineinfile: dest=/home/gitlab/gitlab/config/gitlab.yml regexp="ssh_port:" line="  ssh_port:\x20$ssh_port"
+
+  - name: make directory for satellites
+    file: path=/home/gitlab/gitlab-satellites owner=gitlab group=gitlab state=directory
+
+  - name: copy the example Unicorn config
+    command: sudo -u gitlab -H -i cp gitlab/config/unicorn.rb.example gitlab/config/unicorn.rb
