@@ -1,3 +1,4 @@
+ansible/*
 archives/*
 keys/*
 tmp
