@@ -1,0 +1,12 @@
+---
+  - name: fetch gitlab
+    git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-1-stable
+
+  - name: fix permissions of gitlab
+    command: chown -R gitlab:gitlab /home/gitlab/gitlab
+
+  - name: copy the example GitLab config
+    command: sudo -u gitlab -H -i cp gitlab/config/gitlab.yml.example gitlab/config/gitlab.yml
+
+  - name: configure SSH port to gitolite
+    lineinfile: dest=/home/gitlab/gitlab/config/gitlab.yml regexp="ssh_port:" line="  ssh_port:\x20$ssh_port"
