@@ -1,33 +1,6 @@
 ---
   - name: install required packages
-    apt: pkg=$item
-    with_items:
-      - build-essential
-      - zlib1g-dev
-      - libyaml-dev
-      - libssl-dev
-      - libgdbm-dev
-      - libreadline-dev
-      - libncurses5-dev
-      - libffi-dev
-      - curl
-      - git-core
-      - openssh-server
-      - redis-server
-      - postfix
-      - checkinstall
-      - libxml2-dev
-      - libxslt1-dev
-      - libcurl4-openssl-dev
-      - libicu-dev
-
-  - name: install Ruby 1.9.3
-    apt: pkg=$item
-    with_items:
-      - ruby1.9.3
-
-  - name: gem install bundler
-    command: gem install bundler --conservative
+    apt: pkg=git-core
 
   - name: add user git
     user: name=git system=yes shell=/bin/sh comment="Git Version Control" home=/home/git
@@ -57,7 +30,7 @@
     command: chmod 0444 /home/git/gitlab.pub
 
   - name: use the admin key for the Gitolite setup
-    command: sudo -u git -H -i sh -c "PATH=/home/git/bin:$PATH; gitolite setup -pk /home/git/gitlab.pub"
+    command: sudo -u git -H -i sh -c 'PATH=/home/git/bin:$PATH; gitolite setup -pk /home/git/gitlab.pub'
 
   - name: fix ownership of Gitolite config dir
     command: chown -R git:git /home/git/.gitolite

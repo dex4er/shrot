@@ -1,8 +1,11 @@
 ---
 - hosts: localhost
   tasks:
+    - include: tasks/ruby-1.9.3-p327.yml
     #- include: tasks/ubuntu_universe.yml
     #- include: tasks/gitlab_gitolite.yml
     #- include: tasks/mysql.yml
     #- include: tasks/gitlab_mysql.yml
-    - include: tasks/gitlab_gitlab.yml
+    #- include: tasks/gitlab_recipes.yml
+    #- include: tasks/gitlab_gitlab.yml
+    #- include: tasks/gitlab_nginx.yml

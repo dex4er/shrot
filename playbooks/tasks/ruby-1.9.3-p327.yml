@@ -1,0 +1,36 @@
+---
+  - name: install required packages
+    apt: pkg=$item
+    with_items:
+      - build-essential
+      - zlib1g-dev
+      - libyaml-dev
+      - libssl-dev
+      - libgdbm-dev
+      - libreadline-dev
+      - libncurses5-dev
+      - libffi-dev
+      - redis-server
+      - checkinstall
+      - libxml2-dev
+      - libxslt1-dev
+      - libcurl4-openssl-dev
+      - libicu-dev
+
+  - name: download Ruby
+    get_url: url=http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p327.tar.gz dest=/tmp/ruby-1.9.3-p327.tar.gz
+
+  - name: unpack Ruby
+    command: tar zxf ruby-1.9.3-p327.tar.gz chdir=/tmp
+
+  - name: configure Ruby
+    command: ./configure chdir=/tmp/ruby-1.9.3-p327
+
+  - name: make Ruby
+    command: make chdir=/tmp/ruby-1.9.3-p327
+
+  - name: install Ruby
+    command: make install chdir=/tmp/ruby-1.9.3-p327
+
+  - name: gem install bundler
+    command: gem install bundler --conservative

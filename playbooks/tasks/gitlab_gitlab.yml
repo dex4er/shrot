@@ -1,4 +1,7 @@
 ---
+  - name: install required packages
+    apt: pkg=libmysqlclient-dev,exim4
+
   - name: fetch gitlab
     git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-1-stable
 
@@ -16,3 +19,51 @@
 
   - name: copy the example Unicorn config
     command: sudo -u gitlab -H -i cp gitlab/config/unicorn.rb.example gitlab/config/unicorn.rb
+
+  - name: copy the mysql settings
+    command: sudo -u gitlab -H -i cp gitlab/config/database.yml.mysql gitlab/config/database.yml
+
+  - name: set password for mysql settings
+    template: src=templates/gitlab_config_database.yml.mysql.j2 dest=/home/gitlab/gitlab/config/database.yml owner=gitlab group=gitlab
+
+  - name: gem install charlock_holmes
+    command: gem install charlock_holmes --version '0.6.9' --conservative
+
+  - name: bundle install gitlab
+    command: sudo -u gitlab -H bundle install --deployment --without development test mysql chdir=/home/gitlab/gitlab
+
+  - name: set gitlab user name
+    command: sudo -u gitlab -H -i git config --global user.name "GitLab"
+
+  - name: set gitlab user email
+    command: sudo -u gitlab -H -i git config --global user.email "gitlab@localhost"
+
+  - name: setup gitlab hooks
+    command: cp /home/gitlab/gitlab/lib/hooks/post-receive /home/git/.gitolite/hooks/common/post-receive
+
+  - name: fix permissions for gitlab hooks
+    file: path=/home/git/.gitolite/hooks/common/post-receive owner=git group=git
+
+  - name: initialise database and activate advanced features
+    command: sudo -u gitlab -H bundle exec rake gitlab:setup RAILS_ENV=production chdir=/home/gitlab/gitlab
+
+  - name: install init script
+    command: cp /tmp/gitlab-recipes/init.d/gitlab /etc/init.d/gitlab
+
+  - name: fix permissions for init script
+    file: path=/home/git/.gitolite/hooks/common/post-receive mode=0755
+
+  - name: deactivate init script
+    command: update-rc.d -f gitlab remove
+
+  - name: make gitlab start on boot
+    command: update-rc.d gitlab defaults 21
+
+  - name: check application status
+    command: sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=production chdir=/home/gitlab/gitlab
+
+  - name: run a more thorough check
+    command: sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=production chdir=/home/gitlab/gitlab
+
+  - name: start gitlab
+    service: name=gitlab state=started

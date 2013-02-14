@@ -1,0 +1,7 @@
+---
+  - name: install required packages
+    apt: pkg=git-core
+
+  - name: fetch gitlab-recipes
+    git: repo=https://github.com/gitlabhq/gitlab-recipes.git dest=/tmp/gitlab-recipes version=4-1-stable
+
