@@ -1,4 +1,5 @@
 ---
+
   - name: install required packages
     apt: pkg=git-core
 

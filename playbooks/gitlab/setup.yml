@@ -1,11 +1,15 @@
 ---
-- hosts: localhost
+
+- include: ../ubuntu/add_repo_universe.yml
+
+- include: ../mysql/setup.yml
+
+- hosts: all
+
   tasks:
-    - include: tasks/ruby-1.9.3-p327.yml
-    #- include: tasks/ubuntu_universe.yml
-    #- include: tasks/gitlab_gitolite.yml
-    #- include: tasks/mysql.yml
-    #- include: tasks/gitlab_mysql.yml
-    #- include: tasks/gitlab_recipes.yml
-    #- include: tasks/gitlab_gitlab.yml
-    #- include: tasks/gitlab_nginx.yml
+  #- include: tasks/setup_ruby.yml
+  #- include: tasks/setup_gitolite.yml
+  #- include: tasks/setup_mysql.yml
+  #- include: tasks/setup_recipes.yml
+  - include: tasks/setup_gitlab.yml
+  - include: tasks/setup_nginx.yml

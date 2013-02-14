@@ -1,4 +1,5 @@
 ---
+
   - name: install required packages
     apt: pkg=git-core
 
@@ -50,5 +51,4 @@
   - name: test if can clone repository
     command: sudo -u gitlab -H -i git clone git@localhost:gitolite-admin.git /tmp/gitolite-admin
 
-  - name: clean up
-    command: rm -rf /tmp/gitolite-admin
+

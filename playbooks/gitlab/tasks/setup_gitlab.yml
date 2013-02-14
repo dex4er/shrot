@@ -1,6 +1,13 @@
 ---
+
   - name: install required packages
-    apt: pkg=libmysqlclient-dev,exim4
+    apt: pkg=$item
+    with_items:
+    - bsdutils
+    - libmysqlclient-dev
+    - exim4
+    - redis-server
+    - checkinstall
 
   - name: fetch gitlab
     git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-1-stable
@@ -23,14 +30,20 @@
   - name: copy the mysql settings
     command: sudo -u gitlab -H -i cp gitlab/config/database.yml.mysql gitlab/config/database.yml
 
+  - name: set username for mysql settings
+    command: sed -i "s/username:.*/username:\x20gitlab/" /home/gitlab/gitlab/config/database.yml
+
   - name: set password for mysql settings
-    template: src=templates/gitlab_config_database.yml.mysql.j2 dest=/home/gitlab/gitlab/config/database.yml owner=gitlab group=gitlab
+    command: sed -i "s/password:.*/password:\x20password/" /home/gitlab/gitlab/config/database.yml
+
+  - name: create ~/.my.cnf config file
+    template: src=templates/home_my_cnf.j2 dest=/home/gitlab/.my.cnf owner=gitlab group=gitlab mode=0600
 
   - name: gem install charlock_holmes
-    command: gem install charlock_holmes --version '0.6.9' --conservative
+    command: script -a /tmp/setup_gitlab.log -c 'gem install charlock_holmes --version "0.6.9" --conservative'
 
   - name: bundle install gitlab
-    command: sudo -u gitlab -H bundle install --deployment --without development postgres test chdir=/home/gitlab/gitlab
+    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle install --deployment --without development postgres test' chdir=/home/gitlab/gitlab
 
   - name: set gitlab user name
     command: sudo -u gitlab -H -i git config --global user.name "GitLab"
@@ -45,13 +58,13 @@
     file: path=/home/git/.gitolite/hooks/common/post-receive owner=git group=git
 
   - name: initialise database and activate advanced features
-    command: sudo -u gitlab -H sh -c 'yes yes | bundle exec rake gitlab:setup RAILS_ENV=production' chdir=/home/gitlab/gitlab
+    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H sh -c "yes yes | bundle exec rake gitlab:setup RAILS_ENV=production"' chdir=/home/gitlab/gitlab
 
   - name: install init script
     command: cp /tmp/gitlab-recipes/init.d/gitlab /etc/init.d/gitlab
 
   - name: fix permissions for init script
-    file: path=/home/git/.gitolite/hooks/common/post-receive mode=0755
+    file: path=/etc/init.d/gitlab mode=0755
 
   - name: deactivate init script
     command: update-rc.d -f gitlab remove
@@ -60,10 +73,11 @@
     command: update-rc.d gitlab defaults 21
 
   - name: check application status
-    command: sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=production chdir=/home/gitlab/gitlab
+    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=production' chdir=/home/gitlab/gitlab
 
   - name: run a more thorough check
-    command: sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=production chdir=/home/gitlab/gitlab
+    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=production' chdir=/home/gitlab/gitlab
 
   - name: start gitlab
     service: name=gitlab state=started
+
