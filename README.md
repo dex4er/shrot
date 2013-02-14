@@ -54,9 +54,21 @@ Build base archive
 Build role archive
 ------------------
 
-    ./build-role.sh Ubuntu precise i386 phpmyadmin
+    ./build-role.sh Ubuntu precise i386 role=phpmyadmin
 
 Install role archive
 --------------------
 
-    ./install.sh host phpmyadmin
+    ./install.sh Ubuntu precise i386 role=phpmyadmin host=myhost remote_user=myuser ask_sudo_pass=yes shrot_home=/home/shrot
+
+Parameters can be placed in profile configuration:
+
+File profile/myhost.yml
+
+    ---
+    host: myhost
+    remote_user: myuser
+    ask_sudo_pass: yes
+    shrot_home: /home/shrot
+
+    ./install.sh Ubuntu precise i386 role=phpmyadmin myhost

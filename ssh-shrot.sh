@@ -4,4 +4,4 @@
 
 read_profiles "$@"
 
-ssh -l root -p $ssh_port -i keys/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@"
+ssh -l root -p $ssh_port -i keys/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${host:-localhost}

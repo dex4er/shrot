@@ -10,4 +10,4 @@ info "Installing shrot $shrot into $host via ansible"
 
 vars="$(eval echo $(set|egrep '^(vendor|suite|arch|role|shrot|shrot_home)='))"
 
-./ansible-playbook-host.sh -l $host -K -e "$vars" install.yml
+./ansible-playbook-host.sh -l $host -e "$vars" install.yml

@@ -102,7 +102,7 @@ read_profiles() {
     first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
     first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
 
-    role=${role:-`config role base`}
+    export role=${role:-`config role base`}
 
     export http_proxy=`config http_proxy $http_proxy`
     export https_proxy=`config https_proxy $https_proxy`
@@ -118,7 +118,7 @@ read_profiles() {
     archive=archives/shrot-$shrot.tgz
     archive_base=archives/shrot-$shrot_base.tgz
 
-    host=`config host localhost`
+    export host=`config host localhost`
     export remote_port=`config remote_port 22`
     export remote_user=`config remote_user root`
     export ask_sudo_pass=`config ask_sudo_pass ''`
