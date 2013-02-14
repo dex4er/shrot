@@ -24,7 +24,7 @@
     command: cp /home/gitlab/.ssh/id_rsa.pub /home/git/gitlab.pub
 
   - name: copy the gitlab user's SSH config
-    template: src=templates/ssh_config.j2 dest=/home/gitlab/.ssh/config owner=gitlab group=gitlab
+    template: src=templates/home_ssh_config.j2 dest=/home/gitlab/.ssh/config owner=gitlab group=gitlab
 
   - name: fix permissions of gitlab.pub
     command: chmod 0444 /home/git/gitlab.pub

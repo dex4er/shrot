@@ -1,9 +1,15 @@
 ---
-  - include: tasks/mysql.yml
 
+- include: ../ubuntu/add_repo_universe.yml
+
+- hosts: all
+
+  tasks:
   - name: install phpmyadmin
     apt: pkg=phpmyadmin
 
   - name: configure apache2
     file: src=/etc/phpmyadmin/apache.conf dest=/etc/apache2/conf.d/phpmyadmin.conf state=link
-    notify: restart apache2
+
+- include: ../apache2/restart.yml
+

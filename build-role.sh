@@ -11,7 +11,9 @@ if [ "$role" = "base" ]; then
     read_profiles "$@"
 fi
 
-test -f playbooks/$role.yml || die "playbook for role $role not found"
+playbook=playbooks/$role/setup.yml
+
+test -f $playbook || die "playbook for role $role not found"
 
 create_tmpdir
 
@@ -30,9 +32,13 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh playbooks/$role.yml
+./ansible-playbook-shrot.sh playbooks/ping.yml || die "playbook for ping failed"
+
+./ansible-playbook-shrot.sh $playbook || info "playbook $playbook failed"
 
 run /etc/init.d/rc.chroot stop
+
+./ansible-playbook-shrot.sh playbooks/clean.yml || info "playbook for clean failed"
 
 umount_vfs
 

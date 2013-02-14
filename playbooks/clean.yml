@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+  tasks:
+
+  - name: clean APT
+    command: apt-get clean
+
+  - name: clean tmp
+    command: sh -c 'rm -rf /tmp/* /var/tmp/*'
+

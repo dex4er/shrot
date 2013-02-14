@@ -1,4 +1,8 @@
 ---
+
+- hosts: all
+  tasks:
+
   - name: install init script for mysql
     copy: src=files/etc_init.d_mysql dest=/etc/init.d/mysql.sysv owner=root group=root mode=755
 
@@ -8,6 +12,6 @@
   - name: deactivate init script for mysql
     command: update-rc.d -f mysql remove
 
-  - name: reactivate init script for mysql
+  - name: activate init script for mysql
     command: update-rc.d mysql defaults 19 21
 
