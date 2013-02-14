@@ -30,7 +30,7 @@
     command: gem install charlock_holmes --version '0.6.9' --conservative
 
   - name: bundle install gitlab
-    command: sudo -u gitlab -H bundle install --deployment --without development test mysql chdir=/home/gitlab/gitlab
+    command: sudo -u gitlab -H bundle install --deployment --without development postgres test chdir=/home/gitlab/gitlab
 
   - name: set gitlab user name
     command: sudo -u gitlab -H -i git config --global user.name "GitLab"
@@ -45,7 +45,7 @@
     file: path=/home/git/.gitolite/hooks/common/post-receive owner=git group=git
 
   - name: initialise database and activate advanced features
-    command: sudo -u gitlab -H bundle exec rake gitlab:setup RAILS_ENV=production chdir=/home/gitlab/gitlab
+    command: sudo -u gitlab -H sh -c 'yes yes | bundle exec rake gitlab:setup RAILS_ENV=production' chdir=/home/gitlab/gitlab
 
   - name: install init script
     command: cp /tmp/gitlab-recipes/init.d/gitlab /etc/init.d/gitlab
