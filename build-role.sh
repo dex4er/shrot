@@ -1,5 +1,12 @@
 #!/bin/sh
 
+error() {
+    info "$@"
+    info "Starting shell in chroot"
+    run bash -i
+    die "Cleaning up"
+}
+
 . $(dirname $0)/common.inc
 
 gain_root "$@"
@@ -32,11 +39,11 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh playbooks/ping.yml || die "playbook for ping failed"
+./ansible-playbook-shrot.sh playbooks/ping.yml || error "playbook for ping failed"
 
-./ansible-playbook-shrot.sh $playbook || die "playbook $playbook failed"
+./ansible-playbook-shrot.sh $playbook || error "playbook $playbook failed"
 
-./ansible-playbook-shrot.sh playbooks/clean.yml || die "playbook for clean failed"
+./ansible-playbook-shrot.sh playbooks/clean.yml || error "playbook for clean failed"
 
 run /etc/init.d/rc.chroot stop
 
