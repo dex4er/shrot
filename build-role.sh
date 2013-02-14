@@ -34,11 +34,11 @@ run /etc/init.d/ssh start
 
 ./ansible-playbook-shrot.sh playbooks/ping.yml || die "playbook for ping failed"
 
-./ansible-playbook-shrot.sh $playbook || info "playbook $playbook failed"
+./ansible-playbook-shrot.sh $playbook || die "playbook $playbook failed"
+
+./ansible-playbook-shrot.sh playbooks/clean.yml || die "playbook for clean failed"
 
 run /etc/init.d/rc.chroot stop
-
-./ansible-playbook-shrot.sh playbooks/clean.yml || info "playbook for clean failed"
 
 umount_vfs
 
