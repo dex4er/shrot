@@ -1,5 +1,39 @@
 #!/bin/sh
 
+# Compatibliity wrapper for systems without Upstart daemon
+#
+# (c) 2013 Piotr Roszatycki <dexter@debian.org>, LGPLv2
+
+die() {
+    echo "$@" 1>&2
+    exit 1
+}
+
+do_cmd() {
+    ljob="$1"; shift
+    lcmd="$1"; shift
+
+    if [ -x /etc/init.d/$ljob.sysv ]; then
+        /etc/init.d/$ljob.sysv $lcmd "$@"
+    elif [ -x /etc/init.d/$ljob ] && ! [ -f /etc/init/$ljob.conf ]; then
+        /etc/init.d/$ljob $lcmd "$@"
+    elif [ -f /etc/init/$ljob.conf ]; then
+        initctl.distrib version >/dev/null || exit 0
+        case $lcmd in
+            status|start|restart|reload)
+                initctl.distrib $lcmd "$@" | grep -qs 'start/running'
+                ;;
+            stop)
+                initctl.distrib stop "$@" | grep -qs 'stop/waiting'
+                ;;
+            *)
+                initctl.distrib $lcmd "$@"
+        esac
+    else
+        die "$arg0: Unknown job: $ljob"
+    fi
+}
+
 arg0="$(basename "$0")"
 
 case "$arg0" in
@@ -7,7 +41,6 @@ case "$arg0" in
         exec initctl "$arg0" "$@"
         ;;
     *)
-        argv="$@"
         while [ $# -gt 0 ]; do
             case "$1" in
                 -*)
@@ -30,10 +63,49 @@ case "$arg0" in
                     break
             esac
         done
-        if [ -x /etc/init.d/$job.sysv ]; then
-            exec /etc/init.d/$job.sysv $cmd "$@"
-        else
-            initctl.distrib version >/dev/null || exit 0
-            exec initctl.distrib $argv
-        fi
+
+        case $cmd in
+            status)
+                if do_cmd $job status "$@" >/dev/null; then
+                    echo "$job start/running"
+                else
+                    echo "$job stop/waiting"
+                fi
+                ;;
+            start)
+                if do_cmd $job status "$@" >/dev/null 2>&1; then
+                    die "$arg0: Job is already running: $job"
+                else
+                    if ret=`do_cmd $job $cmd "$@" 2>&1`; then
+                        echo "$job start/running"
+                    else
+                        die "$arg0: Rejected:" $ret
+                    fi
+                fi
+                ;;
+            stop)
+                if ! do_cmd $job status "$@" >/dev/null 2>&1; then
+                    die "$arg0: Unknown instance:"
+                else
+                    if ret=`do_cmd $job $cmd "$@" 2>&1`; then
+                        echo "$job stop/waiting"
+                    else
+                        die "$arg0: Rejected:" $ret
+                    fi
+                fi
+                ;;
+            restart|reload)
+                if ! do_cmd $job status "$@" >/dev/null 2>&1; then
+                    die "$arg0: Unknown instance:"
+                else
+                    if ret=`do_cmd $job $cmd "$@" 2>&1`; then
+                        echo "$job start/running"
+                    else
+                        die "$arg0: Rejected:" $ret
+                    fi
+                fi
+                ;;
+            *)
+                do_cmd $job $cmd "$@"
+        esac
 esac

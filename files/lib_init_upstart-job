@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Compatibliity wrapper for systems without Upstart daemon
+#
+# (c) 2013 Piotr Roszatycki <dexter@debian.org>, LGPLv2
+
 arg0="$0"
 arg0="${arg0#/etc/rc?.d/[SK][0-9][0-9]}"
 arg0="$(basename "$arg0")"
