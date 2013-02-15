@@ -1,15 +1,27 @@
 ---
 
+- hosts: all
+  tasks:
+  - include: tasks/check_resources.yml
+
 - include: ../ubuntu/add_repo_universe.yml
+
+- hosts: all
+  tasks:
+  - include: tasks/setup_ruby.yml
+
+- hosts: all
+  tasks:
+  - include: tasks/setup_ruby_gems.yml
+  - include: tasks/setup_gitolite.yml
 
 - include: ../mysql/setup.yml
 
 - hosts: all
-
+  vars_files: vars/local.yml
   tasks:
-  #- include: tasks/setup_ruby.yml
-  #- include: tasks/setup_gitolite.yml
-  #- include: tasks/setup_mysql.yml
-  #- include: tasks/setup_recipes.yml
+  - include: tasks/setup_mysql.yml
+  - include: tasks/setup_redis.yml
   - include: tasks/setup_gitlab.yml
   - include: tasks/setup_nginx.yml
+

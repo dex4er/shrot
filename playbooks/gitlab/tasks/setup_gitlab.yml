@@ -1,49 +1,34 @@
 ---
 
-  - name: install required packages
-    apt: pkg=$item
-    with_items:
-    - bsdutils
-    - libmysqlclient-dev
-    - exim4
-    - redis-server
-    - checkinstall
-
   - name: fetch gitlab
-    git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-1-stable
+    git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-2-stable
 
   - name: fix permissions of gitlab
     command: chown -R gitlab:gitlab /home/gitlab/gitlab
 
-  - name: copy the example GitLab config
-    command: sudo -u gitlab -H -i cp gitlab/config/gitlab.yml.example gitlab/config/gitlab.yml
+  - name: create GitLab config file
+    template: src=templates/home_gitlab_gitlab_config_gitlab.yml.j2 dest=/home/gitlab/gitlab/config/gitlab.yml owner=gitlab group=gitlab
 
-  - name: configure SSH port to gitolite
-    lineinfile: dest=/home/gitlab/gitlab/config/gitlab.yml regexp="ssh_port:" line="  ssh_port:\x20$ssh_port"
+  - name: create shrot environment config file
+    template: src=templates/home_gitlab_gitlab_config_environments_shrot.rb.j2 dest=/home/gitlab/gitlab/config/environments/shrot.rb owner=gitlab group=gitlab
+
+  - name: create mysql config file
+    template: src=templates/home_gitlab_gitlab_config_database.yml.j2 dest=/home/gitlab/gitlab/config/database.yml owner=gitlab group=gitlab
+
+  - name: create resque config file
+    template: src=templates/home_gitlab_gitlab_config_rescue.yml.j2 dest=/home/gitlab/gitlab/config/rescue.yml owner=gitlab group=gitlab
+
+  - name: create Unicorn config file
+    template: src=templates/home_gitlab_gitlab_config_unicorn.rb.j2 dest=/home/gitlab/gitlab/config/unicorn.rb owner=gitlab group=gitlab
+
+  - name: create ~/.my.cnf config file
+    template: src=templates/home_gitlab_my_cnf.j2 dest=/home/gitlab/.my.cnf owner=gitlab group=gitlab mode=0600
 
   - name: make directory for satellites
     file: path=/home/gitlab/gitlab-satellites owner=gitlab group=gitlab state=directory
 
-  - name: copy the example Unicorn config
-    command: sudo -u gitlab -H -i cp gitlab/config/unicorn.rb.example gitlab/config/unicorn.rb
-
-  - name: copy the mysql settings
-    command: sudo -u gitlab -H -i cp gitlab/config/database.yml.mysql gitlab/config/database.yml
-
-  - name: set username for mysql settings
-    command: sed -i "s/username:.*/username:\x20gitlab/" /home/gitlab/gitlab/config/database.yml
-
-  - name: set password for mysql settings
-    command: sed -i "s/password:.*/password:\x20password/" /home/gitlab/gitlab/config/database.yml
-
-  - name: create ~/.my.cnf config file
-    template: src=templates/home_my_cnf.j2 dest=/home/gitlab/.my.cnf owner=gitlab group=gitlab mode=0600
-
-  - name: gem install charlock_holmes
-    command: script -a /tmp/setup_gitlab.log -c 'gem install charlock_holmes --version "0.6.9" --conservative'
-
   - name: bundle install gitlab
-    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle install --deployment --without development postgres test' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle install --deployment --without development postgres test' chdir=/home/gitlab/gitlab
 
   - name: set gitlab user name
     command: sudo -u gitlab -H -i git config --global user.name "GitLab"
@@ -58,13 +43,10 @@
     file: path=/home/git/.gitolite/hooks/common/post-receive owner=git group=git
 
   - name: initialise database and activate advanced features
-    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H sh -c "yes yes | bundle exec rake gitlab:setup RAILS_ENV=production"' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H sh -c "yes yes | bundle exec rake gitlab:setup RAILS_ENV=shrot"' chdir=/home/gitlab/gitlab
 
   - name: install init script
-    command: cp /tmp/gitlab-recipes/init.d/gitlab /etc/init.d/gitlab
-
-  - name: fix permissions for init script
-    file: path=/etc/init.d/gitlab mode=0755
+    template: src=templates/etc_init.d_gitlab dest=/etc/init.d/gitlab mode=0755
 
   - name: deactivate init script
     command: update-rc.d -f gitlab remove
@@ -73,10 +55,10 @@
     command: update-rc.d gitlab defaults 21
 
   - name: check application status
-    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=production' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=shrot' chdir=/home/gitlab/gitlab
 
   - name: run a more thorough check
-    command: script -a /tmp/setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=production' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=shrot' chdir=/home/gitlab/gitlab
 
   - name: start gitlab
     service: name=gitlab state=started

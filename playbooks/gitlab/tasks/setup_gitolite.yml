@@ -25,13 +25,13 @@
     command: cp /home/gitlab/.ssh/id_rsa.pub /home/git/gitlab.pub
 
   - name: copy the gitlab user's SSH config
-    template: src=templates/home_ssh_config.j2 dest=/home/gitlab/.ssh/config owner=gitlab group=gitlab
+    template: src=templates/home_gitlab_ssh_config.j2 dest=/home/gitlab/.ssh/config owner=gitlab group=gitlab
 
   - name: fix permissions of gitlab.pub
     command: chmod 0444 /home/git/gitlab.pub
 
   - name: use the admin key for the Gitolite setup
-    command: sudo -u git -H -i sh -c 'PATH=/home/git/bin:$PATH; gitolite setup -pk /home/git/gitlab.pub'
+    command: sudo -u git -H -i sh -c 'PATH=/home/git/bin:$PATH gitolite setup -pk /home/git/gitlab.pub'
 
   - name: fix ownership of Gitolite config dir
     command: chown -R git:git /home/git/.gitolite
@@ -42,13 +42,15 @@
   - name: fix ownership of the repositories dir
     command: chown -R git:git /home/git/repositories
 
-  - name: fix permissions of Gitolite config dir
-    command: chmod -R ug+rwXs,o-rwx /home/git/repositories
+  - name: fix permissions of the repositories dir
+    command: chmod -R ug+rwX,o-rwx /home/git/repositories
+
+  - name: fix permissions of the repositories dir (sticky bit)
+    shell: find /home/git/repositories -type d -print0 | xargs -0 chmod g+s
 
   - name: test if can connect localhost
-    shell: sudo -u gitlab -H -i ssh git@localhost -o StrictHostKeyChecking=no -o PasswordAuthentication=no
+    command: sudo -u gitlab -H -i ssh git@localhost -o StrictHostKeyChecking=no -o PasswordAuthentication=no
 
   - name: test if can clone repository
     command: sudo -u gitlab -H -i git clone git@localhost:gitolite-admin.git /tmp/gitolite-admin
-
 

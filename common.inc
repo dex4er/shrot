@@ -122,6 +122,8 @@ read_profiles() {
     export remote_port=`config remote_port 22`
     export remote_user=`config remote_user root`
     export ask_sudo_pass=`config ask_sudo_pass ''`
+
+    export playbook=`config playbook "playbooks/$role/setup.yml"`
 }
 
 mount_vfs() {

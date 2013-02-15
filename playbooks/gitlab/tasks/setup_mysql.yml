@@ -1,8 +1,8 @@
 ---
 
   - name: create database
-    mysql_db: name=gitlabhq_production encoding=utf8 collation=utf8_unicode_ci
+    mysql_db: name=gitlab encoding=utf8 collation=utf8_unicode_ci
 
   - name: create user
-    mysql_user: name=gitlab password='password' priv=gitlabhq_production.*:SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER
+    mysql_user: name=$mysql_username password='$mysql_password' priv=gitlab.*:SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,INDEX,ALTER
 

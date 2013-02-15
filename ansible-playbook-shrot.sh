@@ -2,6 +2,10 @@
 
 . $(dirname $0)/common.inc
 
+read_profiles "$@"
+
+test -f "$playbook" || die "playbook $playbook not found"
+
 vars="$(eval echo $(set|egrep '^(vendor|suite|arch|role|shrot|shrot_home|ssh_port)='))"
 
 ANSIBLE_HOSTS=ansible/hosts \
@@ -10,4 +14,4 @@ ANSIBLE_PRIVATE_KEY_FILE=keys/id_rsa \
 ANSIBLE_REMOTE_TEMP=/tmp/ansible-root \
 ANSIBLE_REMOTE_USER=root \
 ANSIBLE_TRANSPORT=paramiko \
-ansible-playbook -l localhost -e "$vars" "$@"
+ansible-playbook -l localhost -e "$vars" "$playbook"

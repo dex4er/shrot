@@ -3,17 +3,11 @@
   - name: install nginx
     apt: pkg=nginx
 
-  - name: copy nginx config
-    command: cp /tmp/gitlab-recipes/nginx/gitlab /etc/nginx/sites-available/gitlab
+  - name: create nginx config file
+    template: src=templates/etc_nginx_sites-available_gitlab dest=/etc/nginx/sites-available/gitlab
 
   - name: enable nginx config
     file: src=/etc/nginx/sites-available/gitlab dest=/etc/nginx/sites-enabled/gitlab state=link
-
-  - name: set server ip
-    command: sed -i 's/YOUR_SERVER_IP:80/80/' /etc/nginx/sites-available/gitlab
-
-  - name: set server ip
-    command: sed -i 's/YOUR_SERVER_FQDN/localhost/' /etc/nginx/sites-available/gitlab
 
   - name: start nginx
     service: name=nginx state=started

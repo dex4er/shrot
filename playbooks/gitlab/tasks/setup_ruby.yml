@@ -3,19 +3,19 @@
   - name: install required packages
     apt: pkg=$item
     with_items:
-    - build-essential
     - bsdutils
-    - zlib1g-dev
-    - libyaml-dev
-    - libssl-dev
-    - libgdbm-dev
-    - libreadline-dev
-    - libncurses5-dev
+    - build-essential
+    - libcurl4-openssl-dev
     - libffi-dev
+    - libgdbm-dev
+    - libicu-dev
+    - libncurses5-dev
+    - libreadline-dev
+    - libssl-dev
     - libxml2-dev
     - libxslt1-dev
-    - libcurl4-openssl-dev
-    - libicu-dev
+    - libyaml-dev
+    - zlib1g-dev
 
   - name: download Ruby
     get_url: url=http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p327.tar.gz dest=/tmp/ruby-1.9.3-p327.tar.gz
@@ -24,14 +24,11 @@
     command: tar zxf ruby-1.9.3-p327.tar.gz chdir=/tmp
 
   - name: configure Ruby
-    command: script -a /tmp/setup_ruby.log -c './configure' chdir=/tmp/ruby-1.9.3-p327
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c './configure' chdir=/tmp/ruby-1.9.3-p327
 
   - name: make Ruby
-    command: script -a /tmp/setup_ruby.log -c 'make' chdir=/tmp/ruby-1.9.3-p327
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make' chdir=/tmp/ruby-1.9.3-p327
 
   - name: install Ruby
-    command: script -a /tmp/setup_ruby.log -c 'make install' chdir=/tmp/ruby-1.9.3-p327
-
-  - name: gem install bundler
-    command: script -a /tmp/setup_ruby.log -c 'gem install bundler --conservative'
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make install' chdir=/tmp/ruby-1.9.3-p327
 

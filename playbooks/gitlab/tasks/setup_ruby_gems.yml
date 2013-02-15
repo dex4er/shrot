@@ -1,0 +1,11 @@
+---
+
+  - name: gem install bundler
+    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install bundler --conservative'
+
+  - name: install library for charlock_holmes
+    apt: pkg=libicu-dev
+
+  - name: gem install charlock_holmes
+    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install charlock_holmes --version "0.6.9" --conservative'
+

@@ -18,8 +18,6 @@ if [ "$role" = "base" ]; then
     read_profiles "$@"
 fi
 
-playbook=playbooks/$role/setup.yml
-
 test -f $playbook || die "playbook for role $role not found"
 
 create_tmpdir
@@ -39,11 +37,11 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh playbooks/ping.yml || error "playbook for ping failed"
+./ansible-playbook-shrot.sh playbook=playbooks/ping.yml || error "playbook for ping failed"
 
-./ansible-playbook-shrot.sh $playbook || error "playbook $playbook failed"
+./ansible-playbook-shrot.sh || error "playbook $playbook failed"
 
-./ansible-playbook-shrot.sh playbooks/clean.yml || error "playbook for clean failed"
+./ansible-playbook-shrot.sh playbook=playbooks/clean.yml || error "playbook for clean failed"
 
 run /etc/init.d/rc.chroot stop
 

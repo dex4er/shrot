@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: restore GitLab
+    command: script -a /tmp/gitlab_restore.log -c 'sudo -u gitlab -H -i bundle exec rake gitlab:app:backup_restore RAILS_ENV=production' chdir=/home/gitlab/gitlab
+
