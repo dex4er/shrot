@@ -18,6 +18,7 @@
 - include: ../mysql/setup.yml
 
 - hosts: all
+  vars_files: vars/default.yml
   vars_files: vars/local.yml
   tasks:
   - include: tasks/setup_mysql.yml

@@ -1,7 +1,0 @@
----
-
-- hosts: all
-  vars_files: vars/local.yml
-  tasks:
-  - include: tasks/setup_nginx.yml
-

@@ -1,0 +1,10 @@
+---
+
+- include: check_resources.yml
+
+- hosts: all
+  tasks:
+
+  - name: install apache2
+    apt: pkg=apache2
+

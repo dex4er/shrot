@@ -1,0 +1,7 @@
+---
+
+mysql_username: gitlab
+mysql_password: gitlab
+
+smtp_username: ''
+smtp_password: ''
