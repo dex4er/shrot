@@ -1,0 +1,11 @@
+---
+
+  - name: add Foswiki repository
+    template: src=templates/etc_apt_sources.list.d_foswiki.list.j2 dest=/etc/apt/sources.list.d/foswiki.list
+
+  - name: add Foswiki signing key
+    command: apt-key adv --keyserver the.earth.li --recv-keys 379393E0AAEE96F6
+
+  - name: apt-cache update
+    apt: update_cache=yes
+

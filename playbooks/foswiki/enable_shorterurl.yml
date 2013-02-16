@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: enable shorterurl
+    file: src=/etc/foswiki/ShorterUrl.conf dest=/etc/apache2/sites-enabled/foswiki-ShorterUrl.conf state=link
+
+- include: ../apache2/restart.yml
+

@@ -1,0 +1,11 @@
+---
+
+  - name: install additional libraries
+    apt: name=$item
+    with_items:
+    - libapache-htpasswd-perl
+    - libauthen-sasl-perl
+    - libencode-perl
+    - liblocale-msgfmt-perl
+    - libnet-smtp-ssl-perl
+    - libwww-perl

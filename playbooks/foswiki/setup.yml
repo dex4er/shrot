@@ -1,0 +1,18 @@
+---
+
+- include: prepare.yml
+
+- include: ../ubuntu/add_repo_universe.yml
+
+- include: ../apache2/setup.yml
+
+- hosts: all
+  vars_files: vars/default.yml
+
+  tasks:
+  - include: tasks/add_repo_foswiki.yml
+  - include: tasks/install_libraries.yml
+  - include: tasks/install_foswiki.yml
+
+- include: ../apache2/restart.yml
+

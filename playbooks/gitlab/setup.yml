@@ -2,7 +2,7 @@
 
 - hosts: all
   tasks:
-  - include: tasks/check_resources.yml
+  - include: tasks/prepare.yml
 
 - include: ../ubuntu/add_repo_universe.yml
 
@@ -19,7 +19,6 @@
 
 - hosts: all
   vars_files: vars/default.yml
-  vars_files: vars/local.yml
   tasks:
   - include: tasks/setup_mysql.yml
   - include: tasks/setup_redis.yml

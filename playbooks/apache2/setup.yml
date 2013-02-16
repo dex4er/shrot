@@ -1,6 +1,6 @@
 ---
 
-- include: check_resources.yml
+- include: prepare.yml
 
 - hosts: all
   tasks:

@@ -1,0 +1,13 @@
+---
+
+  - name: copy debconf selection
+    template: src=templates/foswiki.debconf.j2 dest=/tmp/foswiki.debconf
+
+  - name: run debconf
+    command: debconf-set-selections /tmp/foswiki.debconf
+
+  - name: install foswiki
+    apt: name=$item
+    with_items:
+    - foswiki
+
