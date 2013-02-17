@@ -8,4 +8,4 @@ ANSIBLE_PRIVATE_KEY_FILE=keys/id_rsa \
 ANSIBLE_REMOTE_TEMP=/tmp/ansible-root \
 ANSIBLE_REMOTE_USER=root \
 ANSIBLE_TRANSPORT=paramiko \
-ansible localhost "$@"
+ansible "$@"

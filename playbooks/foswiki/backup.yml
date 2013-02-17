@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: backup foswiki
+    command: tar zcf foswiki-backup-$datetime_filename.tgz /var/lib/foswiki /var/log/foswiki /etc/foswiki
+
+  - name: fetch backup
+    fetch: src=foswiki-backup-$datetime_filename.tgz dest=backups
+
+  - name: remove backup from server
+    command: rm -f foswiki-backup-$datetime_filename.tgz
+

@@ -124,6 +124,9 @@ read_profiles() {
     export ask_sudo_pass=`config ask_sudo_pass ''`
 
     export playbook=`config playbook "playbooks/$role/setup.yml"`
+
+    export datetime="$(date +%Y-%m-%dT%H:%M:%S)"
+    export datetime_filename="$(echo $datetime | sed -e 's/[:-]//g' -e 's/T/_/')"
 }
 
 mount_vfs() {

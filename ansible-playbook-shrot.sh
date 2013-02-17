@@ -6,7 +6,7 @@ read_profiles "$@"
 
 test -f "$playbook" || die "playbook $playbook not found"
 
-vars="$(eval echo $(set|egrep '^(vendor|suite|arch|role|shrot|shrot_home|ssh_port)='))"
+vars="$(echo $(export | sed -e 's/^declare -x //' -e 's/^export //' | egrep '^[a-z][a-z_]*='))"
 
 test -f ansible/hosts || echo localhost > ansible/hosts
 
