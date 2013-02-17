@@ -5,6 +5,7 @@
     with_items:
     - libapache-htpasswd-perl
     - libauthen-sasl-perl
+    - libcrypt-eksblowfish-perl
     - libencode-perl
     - liblocale-msgfmt-perl
     - libnet-smtp-ssl-perl

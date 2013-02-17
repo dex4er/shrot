@@ -11,3 +11,6 @@
     with_items:
     - foswiki
 
+  - name: enable /etc/foswiki to configuration by web
+    command: chown -R www-data:www-data /etc/foswiki
+
