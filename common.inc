@@ -85,45 +85,45 @@ read_profiles() {
     config test >/dev/null
 
     # get config variables
-    debootstrap=`config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)`
-    arch=`config arch $(dpkg --print-architecture 2>/dev/null || i386)`
-    personality=`config personality ""`
-    variant=`config variant ""`
-    vendor=`config vendor Debian`
-    suite=`config suite stable`
+    export debootstrap="`config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)`"
+    export arch="`config arch $(dpkg --print-architecture 2>/dev/null || i386)`"
+    export personality="`config personality ''`"
+    export variant="`config variant ""`"
+    export vendor="`config vendor Debian`"
+    export suite="`config suite stable`"
 
-    mirror=`config mirror $(mirror_url $vendor)`
+    export mirror="`config mirror $(mirror_url $vendor)`"
 
-    nameserver=`config nameserver 8.8.8.8 8.8.4.4`
+    export nameserver="`config nameserver 8.8.8.8 8.8.4.4`"
 
-    instance=`config instance 0`
-    export ssh_port=`config ssh_port $((2220 + $instance))`
+    export instance="`config instance 0`"
+    export ssh_port="`config ssh_port $((2220 + $instance))`"
 
-    first_system_uid=`config first_system_uid $((200 + 100 * $instance))`
-    first_system_gid=`config first_system_gid $((200 + 100 * $instance))`
+    export first_system_uid="`config first_system_uid $((200 + 100 * $instance))`"
+    export first_system_gid="`config first_system_gid $((200 + 100 * $instance))`"
 
-    export role=${role:-`config role base`}
+    export role="${role:-`config role base`}"
 
-    export http_proxy=`config http_proxy $http_proxy`
-    export https_proxy=`config https_proxy $https_proxy`
+    export http_proxy="`config http_proxy $http_proxy`"
+    export https_proxy="`config https_proxy $https_proxy`"
 
-    shrot=$vendor-$suite-$arch-$role
-    shrot_base=$vendor-$suite-$arch-base
+    export shrot="$vendor-$suite-$arch-$role"
+    export shrot_base="$vendor-$suite-$arch-base"
 
-    shrot_home=`config shrot_home /srv/shrot`
+    export shrot_home="`config shrot_home /srv/shrot`"
 
-    test "$instance" = 0 || shrot=$shrot-inst$instance
-    test "$ssh_port" = $(( 2220 + $instance )) || shrot=$shrot-ssh$ssh_port
+    test "$instance" = 0 || shrot="$shrot-inst$instance"
+    test "$ssh_port" = $(( 2220 + $instance )) || shrot="$shrot-ssh$ssh_port"
 
-    archive=archives/shrot-$shrot.tgz
-    archive_base=archives/shrot-$shrot_base.tgz
+    export archive="archives/shrot-$shrot.tgz"
+    export archive_base="archives/shrot-$shrot_base.tgz"
 
-    export host=`config host localhost`
-    export remote_port=`config remote_port 22`
-    export remote_user=`config remote_user root`
-    export ask_sudo_pass=`config ask_sudo_pass ''`
+    export host="`config host localhost`"
+    export remote_port="`config remote_port 22`"
+    export remote_user="`config remote_user root`"
+    export ask_sudo_pass="`config ask_sudo_pass ''`"
 
-    export playbook=`config playbook "playbooks/$role/setup.yml"`
+    export playbook="`config playbook playbooks/$role/setup.yml`"
 
     export datetime="$(date +%Y-%m-%dT%H:%M:%S)"
     export datetime_filename="$(echo $datetime | sed -e 's/[:-]//g' -e 's/T/_/')"
