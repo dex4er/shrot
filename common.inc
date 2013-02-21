@@ -20,12 +20,18 @@ config() {
     k=$1
     shift
 
+    if ! [ "$k" = "*" ]; then
+        eval export $k=\'"$@"\'
+    fi
+
     for p in $profiles; do
         if ! [ "$p" = "${p%=*}" ]; then
-            if [ "${p%=*}" = "$k" ]; then
-                v="${p#*=}"
-                eval echo `echo $v | sed 's/^[a-z_]*: //'`
-                return
+            if ! [ "$k" = "*" ]; then
+                if [ "${p%=*}" = "$k" ]; then
+                    v="${p#*=}"
+                    eval export $k=\'`echo $v | sed 's/^[a-z_]*: //'`\'
+                    return
+                fi
             fi
         else
             if [ -f profiles/$p.yml ]; then
@@ -34,14 +40,20 @@ config() {
                 p=`echo profiles/*/$p.yml`
             fi
             test -f "$p" || die "profile file $p not found"
-            if v=`grep "^$k: " "$p"`; then
-                eval echo `echo $v | sed 's/^[a-z_]*: //'`
-                return
+            if ! [ "$k" = "*" ]; then
+                if v=`grep "^$k: " "$p"`; then
+                    eval export $k=\'`echo $v | sed 's/^[a-z_]*: //'`\'
+                    return
+                fi
+            else
+                for kk in `grep "^[a-z_]*: " "$p" | sed 's/:.*//'`; do
+                    if v=`grep "^$kk: " "$p"`; then
+                        eval export $kk=\'`echo $v | sed 's/^[a-z_]*: //'`\'
+                    fi
+                done
             fi
         fi
     done
-
-    echo "$@"
 }
 
 mirror_url() {
@@ -82,48 +94,55 @@ gain_root() {
 read_profiles() {
     profiles="$*"
     test -f profiles/default.yml && profiles="$profiles default"
-    config test >/dev/null
+    config '*'
 
     # get config variables
-    export debootstrap="`config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)`"
-    export arch="`config arch $(dpkg --print-architecture 2>/dev/null || i386)`"
-    export personality="`config personality ''`"
-    export variant="`config variant ""`"
-    export vendor="`config vendor Debian`"
-    export suite="`config suite stable`"
+    config debootstrap $(command -v debootstrap >/dev/null && echo debootstrap || echo /usr/sbin/debootstrap)
+    config arch $(dpkg --print-architecture 2>/dev/null || i386)
+    config personality ''
+    config variant ""
+    config vendor Debian
+    config suite stable
 
-    export mirror="`config mirror $(mirror_url $vendor)`"
+    config mirror $(mirror_url $vendor)
 
-    export nameserver="`config nameserver 8.8.8.8 8.8.4.4`"
+    config nameserver 8.8.8.8 8.8.4.4
 
-    export instance="`config instance 0`"
-    export ssh_port="`config ssh_port $((2220 + $instance))`"
+    config instance 0
+    config ssh_port $((2220 + $instance))
 
-    export first_system_uid="`config first_system_uid $((200 + 100 * $instance))`"
-    export first_system_gid="`config first_system_gid $((200 + 100 * $instance))`"
+    config first_system_uid $((200 + 100 * $instance))
+    config first_system_gid $((200 + 100 * $instance))
 
-    export role="${role:-`config role base`}"
+    test -n "$role" || config role base
 
-    export http_proxy="`config http_proxy $http_proxy`"
-    export https_proxy="`config https_proxy $https_proxy`"
+    config http_proxy $http_proxy
+    config https_proxy $https_proxy
 
     export shrot="$vendor-$suite-$arch-$role"
     export shrot_base="$vendor-$suite-$arch-base"
 
-    export shrot_home="`config shrot_home /srv/shrot`"
+    config shrot_home /srv/shrot
 
-    test "$instance" = 0 || shrot="$shrot-inst$instance"
-    test "$ssh_port" = $(( 2220 + $instance )) || shrot="$shrot-ssh$ssh_port"
+    if ! [ "$instance" = 0 ]; then
+        shrot="$shrot-inst$instance"
+        shrot_base="$shrot_base-inst$instance"
+    fi
+
+    if ! [ "$ssh_port" = $(( 2220 + $instance )) ]; then
+        shrot="$shrot-ssh$ssh_port"
+        shrot_base="$shrot_base-ssh$ssh_port"
+    fi
 
     export archive="archives/shrot-$shrot.tgz"
     export archive_base="archives/shrot-$shrot_base.tgz"
 
-    export host="`config host localhost`"
-    export remote_port="`config remote_port 22`"
-    export remote_user="`config remote_user root`"
-    export ask_sudo_pass="`config ask_sudo_pass ''`"
+    config host localhost
+    config remote_port 22
+    config remote_user root
+    config ask_sudo_pass ''
 
-    export playbook="`config playbook playbooks/$role/setup.yml`"
+    config playbook playbooks/$role/setup.yml
 
     export datetime="$(date +%Y-%m-%dT%H:%M:%S)"
     export datetime_filename="$(echo $datetime | sed -e 's/[:-]//g' -e 's/T/_/')"
