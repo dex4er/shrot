@@ -95,7 +95,7 @@ run update-rc.d ssh start 16 2 3 4 5 . stop 90 0 6 . >/dev/null
 cat files/etc_init.d_rc.chroot | write_x /etc/init.d/rc.chroot
 
 # configure ssh server
-run sed -i -e "s/^Port [0-9]*$/Port $ssh_port/" /etc/ssh/sshd_config
+run sed -i -e "s/^Port .*/Port $ssh_port/" /etc/ssh/sshd_config
 
 # ssh keys
 for a in dsa ecdsa rsa; do

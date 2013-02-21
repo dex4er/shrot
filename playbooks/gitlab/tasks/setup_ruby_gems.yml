@@ -1,5 +1,10 @@
 ---
 
+  - name: install required packages
+    apt: pkg=$item
+    with_items:
+    - libmysqlclient-dev
+
   - name: gem install bundler
     command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install bundler --conservative'
 
