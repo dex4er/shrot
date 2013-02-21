@@ -2,8 +2,7 @@
   - name: install additional packages
     apt: name=$item
     with_items:
-    - git
-    - git-svn
+    - subversion
     - perl
     - rcs
     - libalgorithm-diff-perl

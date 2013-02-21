@@ -1,40 +1,13 @@
 ---
 
-  - name: fetch foswiki from github
-    git: repo=https://github.com/foswiki/foswiki dest=/home/foswiki version=Release01x01
+  - name: checkout foswiki
+    subversion: repo=http://svn.foswiki.org/tags/FoswikiRelease01x01x07/ dest=/home/foswiki
 
-  - name: git svn init
-    command: git svn init -s http://svn.foswiki.org chdir=/home/foswiki
-
-  - name: git refs (master)
-    commmand: git update-ref refs/remotes/trunk origin/master
-
-  - name: git refs (release)
-    commmand: git update-ref refs/remotes/Release01x00 origin/release
-
-  - name: git refs (foswiki)
-    commmand: git update-ref refs/remotes/foswiki.org origin/foswiki
-
-  - name: git refs (scratch)
-    commmand: git update-ref refs/remotes/scratch origin/scratch
-
-  - name: git refs (Release04x02)
-    commmand: git update-ref refs/remotes/Release04x02 origin/Release04x02
-
-  - name: git refs (oldRelease04x02)
-    commmand: git update-ref refs/remotes/TWikiRelease04x02 origin/oldRelease04x02
-
-  - name: git refs (oldRelease)
-    commmand: git update-ref refs/remotes/Release origin/oldRelease
-
-  - name: git svn fetch
-    commmand: script --return -a -f /tmp/foswiki_install_foswiki.log -c 'git svn fetch'
-
-  - name: git checkout
-    commmand: git checkout 
-
-  - name: create local configuration
+  - name: create local lib configuration
     shell: sed s,/absolute/path/to/your/lib,/home/foswiki/core/lib, /home/foswiki/core/bin/LocalLib.cfg.txt > /home/foswiki/core/bin/LocalLib.cfg
+
+  - name: create local site configuration
+    copy: src=files/foswiki_core_lib_LocalSite.cfg dest=/home/foswiki/core/lib/LocalSite.cfg
 
   - name: create htpasswd file
     command: htpasswd -bc /home/foswiki/core/data/.htpasswd $foswiki_username $foswiki_password
