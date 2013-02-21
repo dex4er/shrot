@@ -1,0 +1,27 @@
+---
+  - name: install additional packages
+    apt: name=$item
+    with_items:
+    - git
+    - git-svn
+    - perl
+    - rcs
+    - libalgorithm-diff-perl
+    - libapache-htpasswd-perl
+    - libauthen-sasl-perl
+    - libcgi-session-perl
+    - libcrypt-eksblowfish-perl
+    - libcrypt-passwdmd5-perl
+    - libencode-perl
+    - liberror-perl
+    - libhtml-parser-perl
+    - libhtml-tree-perl
+    - libio-socket-ip-perl
+    - liblocale-maketext-lexicon-perl
+    - liblocale-msgfmt-perl
+    - libnet-smtp-ssl-perl
+    - libtext-diff-perl
+    - libunicode-maputf8-perl
+    - liburi-perl
+    - libwww-perl
+

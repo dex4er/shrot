@@ -1,18 +1,19 @@
 ---
 
 - hosts: all
-  #vars_files: vars/default.yml
+  vars_files: vars/default.yml
 
   tasks:
 
   - name: set apache2 name virtual host
-    command: sed -i "s/^NameVirtualHost .*/NameVirtualHost *:$apache2_port/" /etc/apache2/ports.conf
+    command: sed -i "s/^NameVirtualHost .*/NameVirtualHost *:$http_port/" /etc/apache2/ports.conf
 
   - name: set apache2 listen port
-    command: sed -i "s/^Listen .*/Listen $apache2_port/" /etc/apache2/ports.conf
+    command: sed -i "s/^Listen .*/Listen $http_port/" /etc/apache2/ports.conf
 
   - name: set apache2 default server configuration
-    command: sed -i "s/<VirtualHost .:.*>/<VirtualHost *:$apache2_port>/" /etc/apache2/sites-available/default
+    command: sed -i "s/<VirtualHost .:.*>/<VirtualHost *:$http_port>/" /etc/apache2/sites-available/default
 
   - name: restart apache2
     service: name=apache2 state=restarted
+

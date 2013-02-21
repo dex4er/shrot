@@ -1,7 +1,10 @@
 ---
 
 - hosts: all
+  vars_files: vars/default.yml
+
   tasks:
 
   - name: check if TCP ports are free
-    wait_for: port=80 state=stopped timeout=1
+    wait_for: port=$http_port state=stopped timeout=1
+

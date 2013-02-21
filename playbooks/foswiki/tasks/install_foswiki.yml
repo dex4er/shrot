@@ -1,16 +1,56 @@
 ---
 
-  - name: copy debconf selection
-    template: src=templates/foswiki.debconf.j2 dest=/tmp/foswiki.debconf
+  - name: fetch foswiki from github
+    git: repo=https://github.com/foswiki/foswiki dest=/home/foswiki version=Release01x01
 
-  - name: run debconf
-    command: debconf-set-selections /tmp/foswiki.debconf
+  - name: git svn init
+    command: git svn init -s http://svn.foswiki.org chdir=/home/foswiki
 
-  - name: install foswiki
-    apt: name=$item
-    with_items:
-    - foswiki
+  - name: git refs (master)
+    commmand: git update-ref refs/remotes/trunk origin/master
 
-  - name: enable /etc/foswiki to configuration by web
-    command: chown -R www-data:www-data /etc/foswiki
+  - name: git refs (release)
+    commmand: git update-ref refs/remotes/Release01x00 origin/release
+
+  - name: git refs (foswiki)
+    commmand: git update-ref refs/remotes/foswiki.org origin/foswiki
+
+  - name: git refs (scratch)
+    commmand: git update-ref refs/remotes/scratch origin/scratch
+
+  - name: git refs (Release04x02)
+    commmand: git update-ref refs/remotes/Release04x02 origin/Release04x02
+
+  - name: git refs (oldRelease04x02)
+    commmand: git update-ref refs/remotes/TWikiRelease04x02 origin/oldRelease04x02
+
+  - name: git refs (oldRelease)
+    commmand: git update-ref refs/remotes/Release origin/oldRelease
+
+  - name: git svn fetch
+    commmand: script --return -a -f /tmp/foswiki_install_foswiki.log -c 'git svn fetch'
+
+  - name: git checkout
+    commmand: git checkout 
+
+  - name: create local configuration
+    shell: sed s,/absolute/path/to/your/lib,/home/foswiki/core/lib, /home/foswiki/core/bin/LocalLib.cfg.txt > /home/foswiki/core/bin/LocalLib.cfg
+
+  - name: create htpasswd file
+    command: htpasswd -bc /home/foswiki/core/data/.htpasswd $foswiki_username $foswiki_password
+
+  - name: enable extensions in a checkout area
+    command: ./pseudo-install.pl default chdir=/home/foswiki/core
+
+  - name: fix ownership of foswiki directories
+    command: chown -R www-data:www-data /home/foswiki
+
+  - name: enable mod_rewrite
+    command: a2enmod rewrite
+
+  - name: configure apache2
+    copy: src=files/apache2_foswiki.conf dest=/etc/apache2/conf.d/foswiki.conf
+
+  - name: configure apache2 (shorterurl)
+    copy: src=files/apache2_foswiki-shorterurl.conf dest=/etc/apache2/conf.d/foswiki-shorterurl.conf
 

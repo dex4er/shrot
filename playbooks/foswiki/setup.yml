@@ -10,8 +10,7 @@
   vars_files: vars/default.yml
 
   tasks:
-  - include: tasks/add_repo_foswiki.yml
-  - include: tasks/install_libraries.yml
+  - include: tasks/apt_install.yml
   - include: tasks/install_foswiki.yml
 
 - include: ../apache2/restart.yml

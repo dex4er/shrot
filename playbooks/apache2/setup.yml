@@ -3,8 +3,11 @@
 - include: prepare.yml
 
 - hosts: all
+
   tasks:
 
   - name: install apache2
     apt: pkg=apache2
+
+- include: set_port.yml
 
