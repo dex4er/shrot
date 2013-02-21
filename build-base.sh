@@ -97,6 +97,9 @@ cat files/etc_init.d_rc.chroot | write_x /etc/init.d/rc.chroot
 # configure ssh server
 run sed -i -e "s/^Port .*/Port $ssh_port/" /etc/ssh/sshd_config
 
+# configure syslog
+run sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
+
 # ssh keys
 for a in dsa ecdsa rsa; do
     install -m 0600 -o root -g root keys/ssh_host_${a}_key $target/etc/ssh
