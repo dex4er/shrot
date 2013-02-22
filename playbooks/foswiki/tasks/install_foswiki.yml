@@ -1,13 +1,44 @@
 ---
 
-  - name: checkout foswiki
-    subversion: repo=http://svn.foswiki.org/tags/FoswikiRelease01x01x07/ dest=/home/foswiki
+  - name: fetch foswiki from github (Release01x01 branch)
+    git: repo=https://github.com/foswiki/$item dest=/home/foswiki/$item version=Release01x01
+    with_items:
+    - core
+    - AutoViewTemplatePlugin
+    - BuildContrib
+    - CommentPlugin
+    - CompareRevisionsAddOn
+    - EditTablePlugin
+    - EmptyPlugin
+    - FamFamFamContrib
+    - HistoryPlugin
+    - InterwikiPlugin
+    - JQueryPlugin
+    - JSCalendarContrib
+    - MailerContrib
+    - PatternSkin
+    - PreferencesPlugin
+    - RenderListPlugin
+    - SlideShowPlugin
+    - SmiliesPlugin
+    - SpreadSheetPlugin
+    - TWikiCompatibilityPlugin
+    - TablePlugin
+    - TestFixturePlugin
+    - TinyMCEPlugin
+    - TipsContrib
+    - TopicUserMappingContrib
+    - TwistyPlugin
+    - UnitTestContrib
+    - WysiwygPlugin
 
-  - name: create local lib configuration
+  - name: fetch foswiki from github (master branch)
+    git: repo=https://github.com/foswiki/$item dest=/home/foswiki/$item
+    with_items:
+    - PatchFoswikiContrib
+
+  - name: create local configuration
     shell: sed s,/absolute/path/to/your/lib,/home/foswiki/core/lib, /home/foswiki/core/bin/LocalLib.cfg.txt > /home/foswiki/core/bin/LocalLib.cfg
-
-  - name: create local site configuration
-    copy: src=files/foswiki_core_lib_LocalSite.cfg dest=/home/foswiki/core/lib/LocalSite.cfg
 
   - name: create htpasswd file
     command: htpasswd -bc /home/foswiki/core/data/.htpasswd $foswiki_username $foswiki_password
