@@ -105,7 +105,7 @@ backup:
 
 ## Gitolite settings
 gitolite:
-  admin_uri: git@localhost:gitolite-admin
+  admin_uri: ssh://git@localhost:{{ ssh_port }}/gitolite-admin
 
   # REPOS_PATH MUST NOT BE A SYMLINK!!!
   repos_path: /home/git/repositories/
