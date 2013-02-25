@@ -8,6 +8,9 @@
     apt: pkg=schroot state=installed
     when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
 
+  - name: check if schroot is version 1.6 or greater
+    shell: dpkg --compare-versions $(dpkg-query -W -f='${Version}\n' schroot) ge 1.6 || false
+
   - name: create shrot group
     group: name=shrot system=yes state=present
 
@@ -50,7 +53,7 @@
     command: rm -rf $shrot_home/$shrot
 
   - name: copy shrot archive
-    copy: src=archives/shrot-$shrot.tgz dest=$shrot_home/shrot-$shrot.tgz
+    copy: src=../../archives/shrot-$shrot.tgz dest=$shrot_home/shrot-$shrot.tgz
 
   - name: create new dir for shrot
     file: path=$shrot_home/$shrot state=directory mode=0755
