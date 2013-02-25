@@ -1,7 +1,10 @@
 ---
 
+  - name: add user foswiki
+    user: name=foswiki system=yes shell=/bin/sh comment="Foswiki" home=/var/www/foswiki
+
   - name: fetch foswiki from github (Release01x01 branch)
-    git: repo=https://github.com/foswiki/$item dest=/home/foswiki/$item version=Release01x01
+    git: repo=https://github.com/foswiki/$item dest=/var/www/foswiki/$item version=Release01x01
     with_items:
     - core
     - AutoViewTemplatePlugin
@@ -33,37 +36,43 @@
     - WysiwygPlugin
 
   - name: fetch foswiki from github (master branch)
-    git: repo=https://github.com/foswiki/$item dest=/home/foswiki/$item
+    git: repo=https://github.com/foswiki/$item dest=/var/www/foswiki/$item
     with_items:
     - BreadCrumbsPlugin
     - PatchFoswikiContrib
 
   - name: create local configuration
-    shell: sed s,/absolute/path/to/your/lib,/home/foswiki/core/lib, /home/foswiki/core/bin/LocalLib.cfg.txt > /home/foswiki/core/bin/LocalLib.cfg
+    shell: sed s,/absolute/path/to/your/lib,/var/www/foswiki/core/lib, /var/www/foswiki/core/bin/LocalLib.cfg.txt > /var/www/foswiki/core/bin/LocalLib.cfg
 
   - name: create htpasswd file
-    command: htpasswd -bc /home/foswiki/core/data/.htpasswd $foswiki_username $foswiki_password
+    command: htpasswd -bc /var/www/foswiki/core/data/.htpasswd $foswiki_username $foswiki_password
 
   - name: enable extensions in a checkout area
-    command: ./pseudo-install.pl default chdir=/home/foswiki/core
+    command: ./pseudo-install.pl default chdir=/var/www/foswiki/core
 
   - name: enable more extensions
-    command: ./pseudo-install.pl $item chdir=/home/foswiki/core
+    command: ./pseudo-install.pl $item chdir=/var/www/foswiki/core
     with_items:
     - BreadCrumbsPlugin
 
   - name: set breadcrumbs skin as default
-    lineinfile: dest=/home/foswiki/core/data/Main/SitePreferences.txt line='   * Set SKIN = breadcrumbs,pattern'
+    lineinfile: dest=/var/www/foswiki/core/data/Main/SitePreferences.txt state=present regexp=' Set SKIN ' line='   * Set SKIN = breadcrumbs,pattern'
 
   - name: fix ownership of foswiki directories
-    command: chown -R www-data:www-data /home/foswiki
+    command: chown -R foswiki:foswiki /var/www/foswiki
 
   - name: enable mod_rewrite
     command: a2enmod rewrite
+
+  - name: enable suexec
+    command: a2enmod suexec
 
   - name: configure apache2
     copy: src=files/apache2_foswiki.conf dest=/etc/apache2/conf.d/foswiki.conf
 
   - name: configure apache2 (shorterurl)
     copy: src=files/apache2_foswiki-shorterurl.conf dest=/etc/apache2/conf.d/foswiki-shorterurl.conf
+
+  - name: enable suexec
+    lineinfile: dest=/etc/apache2/sites-available/default regexp=SuexecUserGroup insertafter=ScriptAlias line='    SuexecUserGroup foswiki foswiki'
 
