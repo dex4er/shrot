@@ -8,7 +8,7 @@ test -f "$playbook" || die "playbook $playbook not found"
 
 vars="$(echo $(export | sed -e 's/^declare -x //' -e 's/^export //' | egrep '^[a-z][a-z_]*='))"
 
-test -f ansible/hosts || echo localhost > ansible/hosts
+grep -qs "^$host$" ansible/hosts || echo $host >> ansible/hosts
 
 ANSIBLE_HOSTS=ansible/hosts \
 ANSIBLE_REMOTE_PORT=${ssh_port:-2220} \
