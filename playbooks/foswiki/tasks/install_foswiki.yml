@@ -35,6 +35,7 @@
   - name: fetch foswiki from github (master branch)
     git: repo=https://github.com/foswiki/$item dest=/home/foswiki/$item
     with_items:
+    - BreadCrumbsPlugin
     - PatchFoswikiContrib
 
   - name: create local configuration
@@ -45,6 +46,14 @@
 
   - name: enable extensions in a checkout area
     command: ./pseudo-install.pl default chdir=/home/foswiki/core
+
+  - name: enable more extensions
+    command: ./pseudo-install.pl $item chdir=/home/foswiki/core
+    with_items:
+    - BreadCrumbsPlugin
+
+  - name: set breadcrumbs skin as default
+    lineinfile: dest=/home/foswiki/core/data/Main/SitePreferences.txt line='   * Set SKIN = breadcrumbs,pattern'
 
   - name: fix ownership of foswiki directories
     command: chown -R www-data:www-data /home/foswiki
