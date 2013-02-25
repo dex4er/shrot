@@ -3,8 +3,10 @@
     apt: name=$item
     with_items:
     - git
+    - git-svn
     - perl
     - rcs
+    - subversion
     - libalgorithm-diff-perl
     - libapache-htpasswd-perl
     - libauthen-sasl-perl
@@ -16,6 +18,7 @@
     - libhtml-parser-perl
     - libhtml-tree-perl
     - libio-socket-ip-perl
+    - libjson-perl
     - liblocale-maketext-lexicon-perl
     - liblocale-msgfmt-perl
     - libnet-smtp-ssl-perl
