@@ -1,6 +1,7 @@
 ---
 
 - include: prepare.yml
+- include: ../ubuntu/add_repo_universe.yml
 
 - hosts: all
 
