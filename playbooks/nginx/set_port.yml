@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  vars_files: vars/default.yml
+
+  tasks:
+
+  - name: set nginx listen port
+    command: sed -i "s/^#listen   80;/listen   $http_port;/" /etc/nginx/sites-available/default
+
+- include: restart.yml
+

@@ -1,0 +1,13 @@
+---
+
+- include: prepare.yml
+
+- hosts: all
+
+  tasks:
+
+  - name: install nginx
+    apt: pkg=nginx
+
+- include: set_port.yml
+
