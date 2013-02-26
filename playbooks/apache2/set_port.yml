@@ -14,6 +14,5 @@
   - name: set apache2 default server configuration
     command: sed -i "s/<VirtualHost .:.*>/<VirtualHost *:$http_port>/" /etc/apache2/sites-available/default
 
-  - name: restart apache2
-    service: name=apache2 state=restarted
+- include: restart.yml
 
