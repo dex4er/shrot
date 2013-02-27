@@ -22,7 +22,7 @@
     shell: debconf-get-selections | grep mysql-server/root_password | sed 's/$/$mysql_root_password/' | debconf-set-selections
 
   - name: reconfigure with new password
-    command: dpkg-reconfigure -fnoninteractive $(debconf-get-selections | awk '$2 == "mysql-server/root_password" { print $1 }')
+    shell: dpkg-reconfigure -fnoninteractive $(debconf-get-selections | awk '$2 == "mysql-server/root_password" { print $1 }')
 
   - name: create .my.cnf
     template: src=templates/root_my.cnf.j2 dest=/root/.my.cnf mode=0600
