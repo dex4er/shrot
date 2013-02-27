@@ -6,7 +6,7 @@
   tasks:
 
   - name: set nginx listen port
-    command: sed -i "s/^#listen   80;/listen   $http_port;/" /etc/nginx/sites-available/default
+    command: sed -i "s/#listen   80;/listen   $http_port;/" /etc/nginx/sites-available/default
 
 - include: restart.yml
 
