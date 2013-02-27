@@ -1,6 +1,7 @@
 ---
 
 - hosts: all
+  vars_files: vars/default.yml
   tasks:
 
   - name: check if TCP ports are free
