@@ -4,4 +4,4 @@
   tasks:
 
   - name: check if TCP ports are free
-    wait_for: port=3306 state=stopped timeout=1
+    wait_for: port=$mysql_port state=stopped timeout=1
