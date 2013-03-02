@@ -11,11 +11,5 @@
   - name: install mysql
     apt: pkg=mysql-server,python-mysqldb,debconf-utils
 
-  - name: deactivate init script for mysql
-    command: update-rc.d -f mysql remove
-
-  - name: activate init script for mysql
-    command: update-rc.d mysql defaults 19 21
-
 - include: set_password.yml
 
