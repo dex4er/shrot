@@ -1,0 +1,9 @@
+---
+http_proxy: http://localhost:3142/
+shrot_home: /srv/shrot
+
+vendor: Ubuntu
+mirror: http://archive.ubuntu.com/ubuntu/
+suite: precise
+arch: i386
+personality: linux32
