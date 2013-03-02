@@ -15,6 +15,7 @@ create_key() {
     if [ ! -f "$file" ]; then
         echo -n $msg
         ssh-keygen -q -f "$file" -N '' -C "$comment" "$@"
+        ssh-keygen -v -f "$file" -l > "$file.asc"
         echo
     fi
 }
