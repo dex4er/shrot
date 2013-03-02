@@ -24,7 +24,7 @@ run /etc/init.d/ssh start
 
 run bash -i
 
-run /etc/init.d/ssh stop
+run /etc/init.d/rc.chroot stop
 
 umount_vfs
 
