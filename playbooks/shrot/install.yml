@@ -8,8 +8,13 @@
     apt: pkg=schroot state=installed
     when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
 
+  - name: install schroot with RPM
+    shell: if rpm --test --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/$ansible_distribution/schroot-1.6.5-0.el${ansible_lsb.major_release}.x86_64.rpm; then rpm --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/$ansible_distribution/schroot-1.6.5-0.el${ansible_lsb.major_release}.x86_64.rpm; fi
+    when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+
   - name: check if schroot is version 1.6 or greater
     shell: dpkg --compare-versions $(dpkg-query -W -f='${Version}\n' schroot) ge 1.6 || false
+    when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
 
   - name: create shrot group
     group: name=shrot system=yes state=present
