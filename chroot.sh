@@ -18,7 +18,7 @@ echo
 
 mount_vfs
 
-run /etc/init.d/ssh start
+run /etc/init.d/rc.chroot start
 
 ./ansible-shrot.sh localhost -m ping
 
