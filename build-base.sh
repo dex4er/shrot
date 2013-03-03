@@ -20,7 +20,7 @@ create_tmpdir
 $personality $debootstrap \
     --arch=$arch \
     --variant=${variant:--} \
-    --include=openssh-server,python-apt,sudo \
+    --include=openssh-server,python-apt,sudo,resolvconf \
     --foreign \
     $suite $target || die 'debootstrap failed'
 
@@ -48,7 +48,7 @@ echo '# This file is empty' | write /etc/network/interfaces
 echo '127.0.0.1 localhost' | write /etc/hosts
 for n in `echo $nameserver | sed 's/[^0-9.:]/ /g'`; do
     echo "nameserver $n"
-done | write /etc/resolv.conf
+done | write /etc/resolvconf/resolv.conf.d/base
 run rm -f /etc/resolvconf/resolv.conf.d/original
 run rm -f /run/resolvconf/interface/original.resolvconf
 
@@ -82,10 +82,16 @@ cat files/etc_init.d_cron | write_x /etc/init.d/cron.sysv
 run update-rc.d -f cron remove >/dev/null
 run update-rc.d cron start 89 2 3 4 5 . >/dev/null
 
+# init.d resolvconf
+cat files/etc_init.d_resolvconf | write_x /etc/init.d/resolvconf.sysv
+run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/resolvconf.sysv
+run update-rc.d -f resolvconf remove >/dev/null
+run update-rc.d resolvconf start 38 S 2 . stop 89 0 6 . >/dev/null
+
 # init.d networking
 run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/networking
 run update-rc.d -f networking remove >/dev/null
-run update-rc.d networking start 40 S . start 35 0 6 . >/dev/null
+run update-rc.d networking start 40 S 2 . start 35 0 6 . >/dev/null
 
 # init.d ssh
 run sed -i 's/^# Default-Stop:.*$/&      0 6/' /etc/init.d/ssh
