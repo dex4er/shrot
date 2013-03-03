@@ -50,7 +50,7 @@ for n in `echo $nameserver | sed 's/[^0-9.:]/ /g'`; do
     echo "nameserver $n"
 done | write /etc/resolv.conf
 run rm -f /etc/resolvconf/resolv.conf.d/original
-run rm -f /run/resolvconf/interface/original
+run rm -f /run/resolvconf/interface/original.resolvconf
 
 # configure apt
 echo "deb $mirror $suite main" | write /etc/apt/sources.list
