@@ -89,7 +89,9 @@ run update-rc.d -f resolvconf remove >/dev/null
 run update-rc.d resolvconf start 38 S 2 . stop 89 0 6 . >/dev/null
 
 # init.d networking
-run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/networking
+run ln -s /bin/false /bin/init_is_upstart
+cat files/etc_init.d_networking | write_x /etc/init.d/networking.sysv
+run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/networking.sysv
 run update-rc.d -f networking remove >/dev/null
 run update-rc.d networking start 40 S 2 . start 35 0 6 . >/dev/null
 

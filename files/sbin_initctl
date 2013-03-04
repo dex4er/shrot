@@ -30,7 +30,14 @@ do_cmd() {
                 initctl.distrib $lcmd "$@"
         esac
     else
-        die "$arg0: Unknown job: $ljob"
+        case $lcmd in
+            status|start|restart|reload|stop)
+                die "$arg0: Unknown job: $ljob"
+                ;;
+            *)
+                initctl.distrib version >/dev/null || exit 0
+                initctl.distrib $lcmd $ljob "$@"
+        esac
     fi
 }
 
