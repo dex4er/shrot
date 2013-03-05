@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+
+  vars:
+    http_proxy: ''
+
+  tasks:
+
+  - name: set timezone
+    template: src=templates/etc_timezone.j2 dest=/etc/timezone
+
+  - name: reconfigure tzdata
+    command: dpkg-reconfigure -fnoninteractive tzdata
+

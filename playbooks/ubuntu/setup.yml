@@ -1,5 +1,6 @@
 ---
 
+- include: ../debian/configure_tzdata.yml
 - include: ../apt/setup.yml
 - include: add_repo_universe.yml
 
