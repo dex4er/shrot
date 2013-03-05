@@ -14,4 +14,8 @@
     - command-not-found
     - language-pack-en-base
     - mc
+    - strace
+    - tcpdump
+    - telnet
+    - traceroute
 
