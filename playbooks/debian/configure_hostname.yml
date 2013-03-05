@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+
+  vars:
+    hostname: shrot
+
+  tasks:
+
+  - name: prepare /etc/hosts
+    lineinfile: dest=/etc/hosts regexp='^127\.0\.1\.1' insertafter='^127\.0\.0\.1' line='127.0.1.1 localhost'
+
+  - name: set hostname
+    shell: sed -i "s/^127\.0\.1\.1[[:space:]].*/127.0.1.1 $hostname $(hostname)/" /etc/hosts
+
