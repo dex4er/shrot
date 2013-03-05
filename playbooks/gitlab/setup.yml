@@ -18,7 +18,14 @@
 - include: ../mysql/setup.yml
 
 - hosts: all
-  vars_files: vars/default.yml
+
+  vars:
+    db_username: gitlab
+    db_password: gitlab
+
+    smtp_username: ''
+    smtp_password: ''
+
   tasks:
   - include: tasks/setup_mysql.yml
   - include: tasks/setup_redis.yml

@@ -1,7 +1,9 @@
 ---
 
 - hosts: all
-  vars_files: vars/default.yml
+
+  vars:
+    http_port: 8080
 
   tasks:
 

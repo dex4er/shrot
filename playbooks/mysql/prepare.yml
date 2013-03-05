@@ -1,7 +1,10 @@
 ---
 
 - hosts: all
-  vars_files: vars/default.yml
+
+  vars:
+    mysql_port: 3306
+
   tasks:
 
   - name: check if TCP ports are free
