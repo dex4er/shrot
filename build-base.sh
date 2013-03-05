@@ -45,7 +45,7 @@ mount_vfs
 
 # enable networking
 echo '# This file is empty' | write /etc/network/interfaces
-echo '127.0.0.1 localhost' | write /etc/hosts
+printf "127.0.0.1\tlocalhost\n" | write /etc/hosts
 for n in `echo $nameserver | sed 's/[^0-9.:]/ /g'`; do
     echo "nameserver $n"
 done | write /etc/resolvconf/resolv.conf.d/base
