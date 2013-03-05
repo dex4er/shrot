@@ -52,6 +52,12 @@ done | write /etc/resolvconf/resolv.conf.d/base
 run rm -f /etc/resolvconf/resolv.conf.d/original
 run rm -f /run/resolvconf/interface/original.resolvconf
 
+# reset hostname and set dnsdomainname
+run rm -f /etc/hostname
+if [ -n "$dnsdomainname" ]; then
+    echo $dnsdomainname | write /etc/dnsdomainname
+fi
+
 # configure apt
 echo "deb $mirror $suite main" | write /etc/apt/sources.list
 
@@ -67,6 +73,11 @@ run sh -c 'rm -f /etc/rc[02].d/[SK]*'
 # init.d rc.local
 run update-rc.d -f rc.local remove >/dev/null
 run update-rc.d rc.local start 99 2 3 4 5 . >/dev/null
+
+# init.d dnsdomainname.sh
+cat files/etc_init.d_dnsdomainname.sh | write_x /etc/init.d/dnsdomainname.sh
+run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
+run update-rc.d dnsdomainname.sh start 02 S 2 . >/dev/null
 
 # init.d sudo
 run update-rc.d -f sudo remove >/dev/null
@@ -84,19 +95,19 @@ run update-rc.d cron start 89 2 3 4 5 . >/dev/null
 
 # init.d resolvconf
 cat files/etc_init.d_resolvconf | write_x /etc/init.d/resolvconf.sysv
-run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/resolvconf.sysv
+run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/resolvconf
 run update-rc.d -f resolvconf remove >/dev/null
 run update-rc.d resolvconf start 38 S 2 . stop 89 0 6 . >/dev/null
 
 # init.d networking
 run ln -s /bin/false /bin/init_is_upstart
 cat files/etc_init.d_networking | write_x /etc/init.d/networking.sysv
-run sed -i 's/^# Default-Start:.*$/&      S 2/' /etc/init.d/networking.sysv
+run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/networking
 run update-rc.d -f networking remove >/dev/null
 run update-rc.d networking start 40 S 2 . start 35 0 6 . >/dev/null
 
 # init.d ssh
-run sed -i 's/^# Default-Stop:.*$/&      0 6/' /etc/init.d/ssh
+run sed -i 's/^\(# Default-Stop:\).*$/\1\t\t0 6/' /etc/init.d/ssh
 run update-rc.d -f ssh remove >/dev/null
 run update-rc.d ssh start 16 2 3 4 5 . stop 90 0 6 . >/dev/null
 

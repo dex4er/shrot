@@ -5,7 +5,7 @@
 # Required-Start:    $local_fs
 # Required-Stop:     $local_fs
 # X-Start-Before:    networking ifupdown
-# Default-Start:     S
+# Default-Start:     S 2
 # Default-Stop:      0 6
 # Short-Description: Nameserver information manager
 # Description:       This service manages the list of nameserver addresses
