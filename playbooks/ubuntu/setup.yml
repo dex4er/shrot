@@ -14,6 +14,8 @@
     - bash-completion
     - command-not-found
     - language-pack-en-base
+    - links
+    - man-db
     - mc
     - strace
     - tcpdump
