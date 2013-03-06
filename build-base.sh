@@ -52,8 +52,11 @@ done | write /etc/resolvconf/resolv.conf.d/base
 run rm -f /etc/resolvconf/resolv.conf.d/original
 run rm -f /run/resolvconf/interface/original.resolvconf
 
-# reset hostname and set dnsdomainname
+# set hostname and dnsdomainname
 run rm -f /etc/hostname
+if [ -n "$hostname" ]; then
+    echo $hostname | write /etc/hostname
+fi
 if [ -n "$dnsdomainname" ]; then
     echo $dnsdomainname | write /etc/dnsdomainname
 fi

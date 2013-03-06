@@ -1,0 +1,18 @@
+---
+
+- hosts: all
+
+  vars:
+    hostname: ~
+    dnsdomainname: ~
+
+  tasks:
+
+  - name: set hostname
+    template: src=templates/etc_hostname.j2 dest=/etc/hostname
+    when_set: $hostname
+
+  - name: set dnsdomainname
+    template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
+    when_set: $dnsdomainname
+

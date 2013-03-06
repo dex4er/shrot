@@ -107,6 +107,7 @@ read_profiles() {
     config mirror $(mirror_url $vendor)
 
     config nameserver 8.8.8.8 8.8.4.4
+    config hostname ''
     config dnsdomainname ''
 
     config instance 0

@@ -7,9 +7,8 @@
 # Default-Start:     S 2
 # Default-Stop:
 # Short-Description: Set full hostname based on short hostname
-# Description:       Updates /etc/hosts file based on current shrot
-#                    hostname nad /etc/domainname file
-#                    update the /etc/hosts file
+# Description:       Updates /etc/hosts file based on /etc/hosts
+#                    and /etc/domainname files
 ### END INIT INFO
 
 PATH=/sbin:/bin
@@ -18,10 +17,17 @@ PATH=/sbin:/bin
 . /lib/lsb/init-functions
 
 do_start () {
-	HOSTNAME="$(hostname)"
+	[ -f /etc/hostname ] && HOSTNAME="$(cat /etc/hostname)"
+
+	[ -z "$HOSTNAME" ] && HOSTNAME="$(hostname)"
 
 	# And set it to 'localhost' if no setting was found
 	[ -z "$HOSTNAME" ] && HOSTNAME=localhost
+
+	KERNEL_HOSTNAME="$(hostname)"
+
+	# And set it to 'localhost' if no setting was found
+	[ -z "$KERNEL_HOSTNAME" ] && KERNEL_HOSTNAME=localhost
 
 	[ -f /etc/dnsdomainname ] && DNSDOMAINNAME="$(cat /etc/dnsdomainname)"
 
