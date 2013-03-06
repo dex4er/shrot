@@ -16,3 +16,6 @@
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
     when_set: $dnsdomainname
 
+  - name: invoke dnsdomainname.sh
+    service: name=dnsdomainname.sh state=restarted
+

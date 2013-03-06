@@ -39,11 +39,11 @@ do_start () {
 	localhost_regexp='^127\.0\.0\.1[[:space:]]';
 	if grep -qs $localhost_regexp /etc/hosts; then
 		sed -i -e '/^127\.0\.1\.1[[:space:]]/d' \
-		       -e "/$localhost_regexp/a127.0.1.1\t${DNSDOMAINNAME:+$HOSTNAME.$DNSDOMAINNAME }$HOSTNAME" \
+		       -e "/$localhost_regexp/a127.0.1.1\t${DNSDOMAINNAME:+$HOSTNAME.$DNSDOMAINNAME }$KERNEL_HOSTNAME" \
 			/etc/hosts
 	else
 		sed -i -e '/^127\.0\.1\.1[[:space:]]/d' \
-		       -e "1i127.0.1.1\t${DNSDOMAINNAME:+$HOSTNAME.$DNSDOMAINNAME }$HOSTNAME" \
+		       -e "1i127.0.1.1\t${DNSDOMAINNAME:+$HOSTNAME.$DNSDOMAINNAME }$KERNEL_HOSTNAME" \
 			/etc/hosts
 	fi
 	ES=$?
