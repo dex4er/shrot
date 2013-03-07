@@ -43,98 +43,21 @@ run /debootstrap/debootstrap --second-stage
 # mount vfs
 mount_vfs
 
-# enable networking
-echo '# This file is empty' | write /etc/network/interfaces
-printf "127.0.0.1\tlocalhost\n" | write /etc/hosts
-for n in `echo $nameserver | sed 's/[^0-9.:]/ /g'`; do
-    echo "nameserver $n"
-done | write /etc/resolvconf/resolv.conf.d/base
-run rm -f /etc/resolvconf/resolv.conf.d/original
-run rm -f /run/resolvconf/interface/original.resolvconf
-
-# set hostname and dnsdomainname
-run rm -f /etc/hostname
-if [ -n "$hostname" ]; then
-    echo $hostname | write /etc/hostname
-fi
-if [ -n "$dnsdomainname" ]; then
-    echo $dnsdomainname | write /etc/dnsdomainname
-fi
-
-# configure apt
-echo "deb $mirror $suite main" | write /etc/apt/sources.list
-
-# wrapper for initctl and upstart-job
-run dpkg-divert --rename /sbin/initctl
-cat files/sbin_initctl | write_x /sbin/initctl
-run dpkg-divert --divert /lib/init/upstart-job.sh --rename /lib/init/upstart-job
-cat files/lib_init_upstart-job | write_x /lib/init/upstart-job
-
-# clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
-run sh -c 'rm -f /etc/rc[02].d/[SK]*'
-
-# init.d rc.local
-run update-rc.d -f rc.local remove >/dev/null
-run update-rc.d rc.local start 99 2 3 4 5 . >/dev/null
-
-# init.d dnsdomainname.sh
-cat files/etc_init.d_dnsdomainname.sh | write_x /etc/init.d/dnsdomainname.sh
-run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
-run update-rc.d dnsdomainname.sh start 02 S 2 . >/dev/null
-
-# init.d sudo
-run update-rc.d -f sudo remove >/dev/null
-run update-rc.d sudo start 75 2 3 4 5 . >/dev/null
-
-# init.d rsyslog
-cat files/etc_init.d_rsyslog | write_x /etc/init.d/rsyslog.sysv
-run update-rc.d -f rsyslog remove >/dev/null
-run update-rc.d rsyslog start 10 2 3 4 5 . start 30 0 6 . stop 90 1 . >/dev/null
-
-# init.d cron
-cat files/etc_init.d_cron | write_x /etc/init.d/cron.sysv
-run update-rc.d -f cron remove >/dev/null
-run update-rc.d cron start 89 2 3 4 5 . >/dev/null
-
-# init.d resolvconf
-cat files/etc_init.d_resolvconf | write_x /etc/init.d/resolvconf.sysv
-run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/resolvconf
-run update-rc.d -f resolvconf remove >/dev/null
-run update-rc.d resolvconf start 38 S 2 . stop 89 0 6 . >/dev/null
-
-# init.d networking
-run ln -s /bin/false /bin/init_is_upstart
-cat files/etc_init.d_networking | write_x /etc/init.d/networking.sysv
-run sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/networking
-run update-rc.d -f networking remove >/dev/null
-run update-rc.d networking start 40 S 2 . start 35 0 6 . >/dev/null
-
-# init.d ssh
-run sed -i 's/^\(# Default-Stop:\).*$/\1\t\t0 6/' /etc/init.d/ssh
-run update-rc.d -f ssh remove >/dev/null
-run update-rc.d ssh start 16 2 3 4 5 . stop 90 0 6 . >/dev/null
-
-# installing rc.chroot
-cat files/etc_init.d_rc.chroot | write_x /etc/init.d/rc.chroot
-
-# configure ssh server
-run sed -i -e "s/^Port .*/Port $ssh_port/" /etc/ssh/sshd_config
-
-# configure syslog
-run sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
-
-# ssh keys
-for a in dsa ecdsa rsa; do
-    install -m 0600 -o root -g root keys/ssh_host_${a}_key $target/etc/ssh
-    install -m 0644 -o root -g root keys/ssh_host_${a}_key.pub $target/etc/ssh
-done
 install -m 0700 -d $target/root/.ssh
-install -m 0600 -o root -g root keys/id_rsa.pub $target/root/.ssh/authorized_keys
+install -m 0600 -o root -g root keys/id_rsa.pub $target/root/.ssh/authorized_keys_ansible
 
-# clean up
-run apt-get update
-run apt-get clean
-run rm -rf /debootstrap
+run /etc/init.d/ssh start "-p$ssh_port -oAuthorizedKeysFile=%h/.ssh/authorized_keys_ansible"
+
+./ansible-playbook-shrot.sh "$@" host=localhost playbook=playbooks/ping.yml || error "playbook for ping failed"
+
+./ansible-playbook-shrot.sh "$@" host=localhost || error "playbook $playbook failed"
+
+./ansible-playbook-shrot.sh "$@" host=localhost playbook=playbooks/clean.yml || error "playbook for clean failed"
+
+test -x $target/etc/init.d/rc.chroot && run /etc/init.d/rc.chroot stop
+run /etc/init.d/ssh stop
+
+clean_tmp
 
 # umount vfs
 umount_vfs

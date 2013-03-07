@@ -1,12 +1,5 @@
 #!/bin/sh
 
-error() {
-    info "$@"
-    info "Starting shell in chroot"
-    run bash -i
-    die "Cleaning up"
-}
-
 . $(dirname $0)/common.inc
 
 gain_root "$@"
@@ -44,6 +37,8 @@ run /etc/init.d/ssh start
 ./ansible-playbook-shrot.sh "$@" host=localhost playbook=playbooks/clean.yml || error "playbook for clean failed"
 
 run /etc/init.d/rc.chroot stop
+
+clean_tmp
 
 umount_vfs
 

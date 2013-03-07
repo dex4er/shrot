@@ -16,6 +16,13 @@ die() {
     exit 1
 }
 
+error() {
+    info "$@"
+    info "Starting shell in chroot"
+    run bash -i
+    die "Cleaning up"
+}
+
 config() {
     k=$1
     shift
@@ -164,6 +171,10 @@ umount_vfs() {
         run umount /sys
         run umount /proc
     fi
+}
+
+clean_tmp() {
+    run find /tmp /var/tmp -mindepth 1 -print0 | run xargs -0r rm -rf
 }
 
 create_tmpdir() {
