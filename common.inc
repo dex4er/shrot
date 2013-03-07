@@ -153,6 +153,8 @@ read_profiles() {
 
     config playbook playbooks/$role/setup.yml
 
+    config ansible_playbook_arg ''
+
     export datetime="$(date +%Y-%m-%dT%H:%M:%S)"
     export datetime_filename="$(echo $datetime | sed -e 's/[:-]//g' -e 's/T/_/')"
 }

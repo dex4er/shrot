@@ -16,4 +16,4 @@ ANSIBLE_REMOTE_PORT=${remote_port:-22} \
 ANSIBLE_REMOTE_TEMP=/tmp/ansible-root \
 ANSIBLE_REMOTE_USER=${remote_user:-root} \
 ANSIBLE_TRANSPORT=ssh \
-ansible-playbook -l $host -e "$vars" "$playbook"
+ansible-playbook -l $host -e "$vars" "$playbook" $ansible_playbook_args
