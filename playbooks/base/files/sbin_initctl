@@ -9,16 +9,40 @@ die() {
     exit 1
 }
 
+do_show_config() {
+    ljob="$1"; shift
+
+    echo $ljob
+    slevels=`for f in /etc/rc[S0-6].d/S[0-9][0-9]$ljob; do test -f "$f" && printf "%s" $f | sed 's,/etc/rc\(.\).d/.*,\1,'; done`
+    if [ -n "$slevels" ]; then
+        echo "  start on runlevel [$slevels]"
+    fi
+    klevels=`for f in /etc/rc[S0-6].d/K[0-9][0-9]$ljob; do test -f "$f" && printf "%s" $f | sed 's,/etc/rc\(.\).d/.*,\1,'; done`
+    if [ -n "$klevels" ]; then
+        echo "  stop on runlevel [$klevels]"
+    fi
+}
+
 do_cmd() {
     ljob="$1"; shift
     lcmd="$1"; shift
 
     if [ -x /etc/init.d/$ljob.sysv ]; then
-        /etc/init.d/$ljob.sysv $lcmd "$@"
-    elif [ -x /etc/init.d/$ljob ] && ! [ -f /etc/init/$ljob.conf ]; then
-        /etc/init.d/$ljob $lcmd "$@"
-    elif [ -x /etc/init.d/$ljob ] && ! [ -h /etc/init.d/$ljob ]; then
-        /etc/init.d/$ljob $lcmd "$@"
+        case $lcmd in
+            show-config)
+                do_show_config $ljob
+                ;;
+            *)
+                /etc/init.d/$ljob.sysv $lcmd "$@"
+        esac
+    elif [ -x /etc/init.d/$ljob ] && ( ! [ -f /etc/init/$ljob.conf ] || ! [ -h /etc/init.d/$ljob ] ); then
+        case $lcmd in
+            show-config)
+                do_show_config $ljob
+                ;;
+            *)
+                /etc/init.d/$ljob $lcmd "$@"
+        esac
     elif [ -f /etc/init/$ljob.conf ]; then
         initctl.distrib version >/dev/null || exit 0
         case $lcmd in
@@ -38,7 +62,7 @@ do_cmd() {
                 ;;
             *)
                 initctl.distrib version >/dev/null || exit 0
-                echo initctl.distrib $lcmd $ljob "$@"
+                initctl.distrib $lcmd $ljob "$@"
         esac
     fi
 }
