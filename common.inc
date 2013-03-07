@@ -176,7 +176,7 @@ umount_vfs() {
 }
 
 clean_tmp() {
-    run find /tmp /var/tmp -mindepth 1 -print0 | run xargs -0r rm -rf
+    run sh -c 'find /tmp /var/tmp -mindepth 1 -print0 | xargs -0r rm -rf'
 }
 
 create_tmpdir() {
