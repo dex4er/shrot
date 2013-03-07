@@ -17,17 +17,19 @@ do_cmd() {
         /etc/init.d/$ljob.sysv $lcmd "$@"
     elif [ -x /etc/init.d/$ljob ] && ! [ -f /etc/init/$ljob.conf ]; then
         /etc/init.d/$ljob $lcmd "$@"
+    elif [ -x /etc/init.d/$ljob ] && ! [ -h /etc/init.d/$ljob ]; then
+        /etc/init.d/$ljob $lcmd "$@"
     elif [ -f /etc/init/$ljob.conf ]; then
         initctl.distrib version >/dev/null || exit 0
         case $lcmd in
             status|start|restart|reload)
-                initctl.distrib $lcmd "$@" | grep -qs 'start/running'
+                initctl.distrib $lcmd $ljob "$@" | grep -qs 'start/running'
                 ;;
             stop)
-                initctl.distrib stop "$@" | grep -qs 'stop/waiting'
+                initctl.distrib stop $ljob "$@" | grep -qs 'stop/waiting'
                 ;;
             *)
-                initctl.distrib $lcmd "$@"
+                initctl.distrib $lcmd $ljob "$@"
         esac
     else
         case $lcmd in
@@ -36,7 +38,7 @@ do_cmd() {
                 ;;
             *)
                 initctl.distrib version >/dev/null || exit 0
-                initctl.distrib $lcmd $ljob "$@"
+                echo initctl.distrib $lcmd $ljob "$@"
         esac
     fi
 }
