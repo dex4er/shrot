@@ -12,6 +12,8 @@ gain_root "$@"
 
 read_profiles "$@"
 
+nc localhost $ssh_port </dev/null >/dev/null && die "TCP port $ssh_port is already used"
+
 info "Building shrot $shrot"
 
 create_tmpdir
