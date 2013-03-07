@@ -1,0 +1,36 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: install ssh server private keys
+    copy: src=../../keys/ssh_host_${item}_key dest=/etc/ssh/ssh_host_${item}_key mode=0600
+    with_items:
+    - dsa
+    - ecdsa
+    - rsa
+
+  - name: create ssh server public keys
+    shell: ssh-keygen -y -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.pub
+    with_items:
+    - dsa
+    - ecdsa
+    - rsa
+
+  - name: create ssh server public keys ascii-art
+    shell: ssh-keygen -l -v -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.asc
+    with_items:
+    - dsa
+    - ecdsa
+    - rsa
+
+  - name: create ssh authorized keys for ansible (directory)
+    file: path=/root/.ssh mode=0700 state=directory
+
+  - name: create ssh authorized keys for ansible (file)
+    copy: src=../../keys/id_rsa.pub dest=/root/.ssh/authorized_keys_ansible mode=0600
+
+  - name: restart ssh
+    service: name=ssh state=restarted
+

@@ -20,7 +20,7 @@
     copy: src=files/etc_hosts dest=/etc/hosts
 
   - name: enable networking (/etc/resolv.conf)
-    template: src=templates/etc_resolv.conf dest=/etc/resolvconf/resolv.conf.d/base
+    template: src=templates/etc_resolv.conf.j2 dest=/etc/resolvconf/resolv.conf.d/base
 
   - name: enable networking (clean resolvconf at /etc)
     file: path=/etc/resolvconf/resolv.conf.d/original state=absent
@@ -40,7 +40,7 @@
     when_set: $dnsdomainname
 
   - name: configure apt
-    template: src=templates/etc_apt_sources.list dest=/etc/apt/sources.list
+    template: src=templates/etc_apt_sources.list.j2 dest=/etc/apt/sources.list
 
   - name: divert initctl
     command: dpkg-divert --rename /sbin/initctl
@@ -147,47 +147,13 @@
     copy: src=files/etc_init.d_rc.chroot dest=/etc/init.d/rc.chroot mode=0755
 
   - name: configure ssh server (port)
-    command: sed -i "s/^\(SSHD_OPTS\)=.*/\1='-p$ssh_port'/" /etc/default/ssh
+    command: sed -i "s/^\(SSHD_OPTS\)=.*/\\1='-p$ssh_port'/" /etc/default/ssh
 
   - name: configure ssh server (authorized_keys)
-    command: sed -i "s,^#?\(AuthorizedKeysFile\)[[:space:]].*,\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_options
+    command: sed -i "s,^#?\(AuthorizedKeysFile\)[[:space:]].*,\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_config
 
   - name: configure syslog
     command: sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
-
-  - name: install ssh server private keys
-    copy: src=keys/ssh_host_${item}_key /etc/ssh/ssh_host_${item}_key mode=0600
-    with_items:
-    - dsa
-    - ecdsa
-    - rsa
-
-  - name: install ssh server public keys
-    copy: src=keys/ssh_host_${item}_key.pub /etc/ssh/ssh_host_${item}_key.pub mode=0644
-    with_items:
-    - dsa
-    - ecdsa
-    - rsa
-
-  - name: create ssh server public keys
-    shell: ssh-keygen -y -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.pub
-    with_items:
-    - dsa
-    - ecdsa
-    - rsa
-
-  - name: create ssh server public keys ascii-art
-    shell: ssh-keygen -l -v -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.asc
-    with_items:
-    - dsa
-    - ecdsa
-    - rsa
-
-  - name: create ssh authorized keys for ansible (directory)
-    file: path=/root/.ssh mode=0700 state=directory
-
-  - name: create ssh authorized keys for ansible (file)
-    copy: src=keys/id_rsa.pub dest=/root/.ssh/authorized_keys_ansible mode=0600
 
   - name: apt-get update
     command: apt-get update
@@ -197,4 +163,6 @@
 
   - name: clean up after debootstrap
     command: rm -rf /debootstrap
+
+- include: install_ssh_keys.yml
 
