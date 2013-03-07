@@ -55,7 +55,7 @@
     copy: src=files/lib_init_upstart-job dest=/lib/init/upstart-job mode=0755
 
   - name: clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
-    shell: rm -f /etc/rc[02].d/[SK]$item
+    shell: rm -f /etc/rc[02].d/[SK][0-9][0-9]$item
     with_items:
     - halt
     - ondemand
@@ -75,7 +75,7 @@
     copy: src=files/etc_init.d_dnsdomainname.sh dest=/etc/init.d/dnsdomainname.sh mode=0755
 
   - name: init.d dnsdomainname.sh (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
+    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/dnsdomainname.sh
 
   - name: init.d dnsdomainname.sh (remove)
     command: update-rc.d -f dnsdomainname.sh remove
@@ -111,7 +111,7 @@
     copy: src=files/etc_init.d_resolvconf dest=/etc/init.d/resolvconf.sysv
 
   - name: init.d resolvconf (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/resolvconf
+    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/resolvconf
 
   - name: init.d resolvconf (remove)
     command: update-rc.d -f resolvconf remove
@@ -126,7 +126,7 @@
     copy: src=files/etc_init.d_networking dest=/etc/init.d/networking.sysv mode=0755
 
   - name: init.d networking (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/networking
+    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/networking
 
   - name: init.d networking (remove)
     command: update-rc.d -f networking remove
@@ -135,7 +135,7 @@
     command: update-rc.d networking start 40 S 2 . start 35 0 6 .
 
   - name: init.d ssh (tweak)
-    command: sed -i 's/^\(# Default-Stop:\).*$/\1\t\t0 6/' /etc/init.d/ssh
+    command: sed -i 's/^\(# Default-Stop:\).*$/\\1\t\t0 6/' /etc/init.d/ssh
 
   - name: init.d ssh (remove)
     command: update-rc.d -f ssh remove
@@ -150,7 +150,7 @@
     command: sed -i "s/^\(SSHD_OPTS\)=.*/\\1='-p$ssh_port'/" /etc/default/ssh
 
   - name: configure ssh server (authorized_keys)
-    command: sed -i "s,^#?\(AuthorizedKeysFile\)[[:space:]].*,\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_config
+    command: sed -i "s,^#?\(AuthorizedKeysFile\)[[:space:]].*,\\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_config
 
   - name: configure syslog
     command: sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
