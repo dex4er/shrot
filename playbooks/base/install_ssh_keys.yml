@@ -11,24 +11,24 @@
     - ecdsa
     - rsa
 
-  - name: create ssh server public keys
+  - name: install ssh server public keys
     copy: src=../../keys/ssh_host_${item}_key.pub dest=/etc/ssh/ssh_host_${item}_key.pub mode=0644
     with_items:
     - dsa
     - ecdsa
     - rsa
 
-  - name: create ssh server public keys ascii-art fingerprint
+  - name: install ssh server public keys ascii-art fingerprint
     copy: src=../../keys/ssh_host_${item}_key.asc dest=/etc/ssh/ssh_host_${item}_key.asc mode=0644
     with_items:
     - dsa
     - ecdsa
     - rsa
 
-  - name: create ssh authorized keys for ansible (directory)
+  - name: install ssh authorized keys for ansible (directory)
     file: path=/root/.ssh mode=0700 state=directory
 
-  - name: create ssh authorized keys for ansible (file)
+  - name: install ssh authorized keys for ansible (file)
     copy: src=../../keys/id_rsa.pub dest=/root/.ssh/authorized_keys_ansible mode=0600
 
   - name: append key for ansible to authorized keys file
