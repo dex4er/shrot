@@ -12,14 +12,14 @@
     - rsa
 
   - name: create ssh server public keys
-    shell: ssh-keygen -y -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.pub
+    copy: src=../../keys/ssh_host_${item}_key.pub dest=/etc/ssh/ssh_host_${item}_key.pub mode=0644
     with_items:
     - dsa
     - ecdsa
     - rsa
 
-  - name: create ssh server public keys ascii-art
-    shell: ssh-keygen -l -v -f /etc/ssh/ssh_host_${item}_key > /etc/ssh/ssh_host_${item}_key.asc
+  - name: create ssh server public keys ascii-art fingerprint
+    copy: src=../../keys/ssh_host_${item}_key.asc dest=/etc/ssh/ssh_host_${item}_key.asc mode=0644
     with_items:
     - dsa
     - ecdsa
