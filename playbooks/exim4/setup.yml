@@ -1,0 +1,25 @@
+---
+
+- include: prepare.yml
+
+- hosts: all
+
+  vars:
+    tmpdir: /tmp
+    smtp_port: 25
+    smtp_smarthost: ~
+
+  tasks:
+
+  - name: install debconf-utils
+    apt: pkg=debconf-utils
+
+  - name: create debian configuration for exim4
+    template: src=templates/exim4-config.debconf.j2 dest=$tmpdir/exim4-config.debconf mode=0600
+
+  - name: preconfigure exim4
+    command: debconf-set-selections $tmpdir/exim4-config.debconf
+
+  - name: install exim4
+    apt: pkg=exim4,debconf-utils
+
