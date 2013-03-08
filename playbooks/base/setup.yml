@@ -108,10 +108,10 @@
     command: update-rc.d cron start 89 2 3 4 5 .
 
   - name: init.d resolvconf (install)
-    copy: src=files/etc_init.d_resolvconf dest=/etc/init.d/resolvconf.sysv
+    copy: src=files/etc_init.d_resolvconf dest=/etc/init.d/resolvconf.sysv mode=0755
 
   - name: init.d resolvconf (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/resolvconf
+    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/resolvconf.sysv
 
   - name: init.d resolvconf (remove)
     command: update-rc.d -f resolvconf remove
@@ -126,7 +126,7 @@
     copy: src=files/etc_init.d_networking dest=/etc/init.d/networking.sysv mode=0755
 
   - name: init.d networking (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/networking
+    command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/networking.sysv
 
   - name: init.d networking (remove)
     command: update-rc.d -f networking remove
@@ -146,11 +146,14 @@
   - name: init.d rc.chroot (install)
     copy: src=files/etc_init.d_rc.chroot dest=/etc/init.d/rc.chroot mode=0755
 
-  - name: configure ssh server (port)
+  - name: configure ssh server (SSHD_OPTS)
     command: sed -i "s/^\(SSHD_OPTS\)=.*/\\1='-p$ssh_port'/" /etc/default/ssh
 
-  - name: configure ssh server (authorized_keys)
-    command: sed -i "s,^#?\(AuthorizedKeysFile\)[[:space:]].*,\\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_config
+  - name: configure ssh server (Port)
+    command: sed -i "s,^#*[[:space:]]*\(Port\).*,\\1 $ssh_port," /etc/ssh/sshd_config
+
+  - name: configure ssh server (AuthorizedKeysFile)
+    command: sed -i "s,^#*[[:space:]]*\(AuthorizedKeysFile\).*,\\1 %h/.ssh/authorized_keys %h/.ssh/authorized_keys_ansible," /etc/ssh/sshd_config
 
   - name: configure syslog
     command: sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
