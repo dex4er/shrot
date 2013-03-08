@@ -57,9 +57,13 @@
   - name: clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
     shell: rm -f /etc/rc[02].d/[SK][0-9][0-9]$item
     with_items:
+    - bootlogs
     - halt
+    - hwclock.sh
     - ondemand
+    - rmnologin
     - sendsigs
+    - stop-bootlogd
     - umountfs
     - umountnfs.sh
     - umountroot
