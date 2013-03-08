@@ -31,6 +31,9 @@
   - name: create ssh authorized keys for ansible (file)
     copy: src=../../keys/id_rsa.pub dest=/root/.ssh/authorized_keys_ansible mode=0600
 
+  - name: append key for ansible to authorized keys file
+    shell: test $(cat /root/.ssh/authorized_keys | sort -u | wc -l) = $(cat /root/.ssh/authorized_keys /root/.ssh/authorized_keys_ansible | sort -u | wc -l) || { cat /root/.ssh/authorized_keys_ansible >> /root/.ssh/authorized_keys; chmod 0600 /root/.ssh/authorized_keys; }
+
   - name: restart ssh
     service: name=ssh state=restarted
 
