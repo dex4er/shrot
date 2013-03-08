@@ -37,6 +37,10 @@ do_start () {
 	[ "$VERBOSE" != no ] && log_action_begin_msg "Setting dnsdomainname to '$DNSDOMAINNAME'"
 
 	localhost_regexp='^127\.0\.0\.1[[:space:]]';
+	if ! [ -f /etc/hosts ] || ! [ -s /etc/hosts ]; then
+		printf "127.0.0.1\tlocalhost\n" > /etc/hosts
+	fi
+
 	if grep -qs $localhost_regexp /etc/hosts; then
 		sed -i -e '/^127\.0\.1\.1[[:space:]]/d' \
 		       -e "/$localhost_regexp/a127.0.1.1\t${DNSDOMAINNAME:+$HOSTNAME.$DNSDOMAINNAME }$KERNEL_HOSTNAME" \
