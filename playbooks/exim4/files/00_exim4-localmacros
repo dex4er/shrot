@@ -1,0 +1,2 @@
+# /etc/exim4/conf.d/main
+MAIN_LOG_SELECTOR = -queue_run
