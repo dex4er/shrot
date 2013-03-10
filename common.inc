@@ -134,7 +134,7 @@ read_profiles() {
 
     if [ -z "$shrot" ]; then
         shrot="$vendor-$suite-$arch-$role"
-        shrot_base "$vendor-$suite-$arch-base"
+        shrot_base="$vendor-$suite-$arch-base"
 
         if ! [ "$instance" = 0 ]; then
             shrot="$shrot-inst$instance"
