@@ -128,19 +128,23 @@ read_profiles() {
     config http_proxy $http_proxy
     config https_proxy $https_proxy
 
-    export shrot="$vendor-$suite-$arch-$role"
-    export shrot_base="$vendor-$suite-$arch-base"
-
+    config shrot ""
+    config shrot_home ""
     config shrot_home /srv/shrot
 
-    if ! [ "$instance" = 0 ]; then
-        shrot="$shrot-inst$instance"
-        shrot_base="$shrot_base-inst$instance"
-    fi
+    if [ -z "$shrot" ]; then
+        shrot="$vendor-$suite-$arch-$role"
+        shrot_base "$vendor-$suite-$arch-base"
 
-    if ! [ "$ssh_port" = $(( 2220 + $instance )) ]; then
-        shrot="$shrot-ssh$ssh_port"
-        shrot_base="$shrot_base-ssh$ssh_port"
+        if ! [ "$instance" = 0 ]; then
+            shrot="$shrot-inst$instance"
+            shrot_base="$shrot_base-inst$instance"
+        fi
+
+        if ! [ "$ssh_port" = $(( 2220 + $instance )) ]; then
+            shrot="$shrot-ssh$ssh_port"
+            shrot_base="$shrot_base-ssh$ssh_port"
+        fi
     fi
 
     export archive="archives/shrot-$shrot.tgz"
