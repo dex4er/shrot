@@ -1,0 +1,32 @@
+---
+
+- hosts: all
+
+  vars:
+    shrot_home: /srv/shrot
+    tmpdir: /tmp
+
+  tasks:
+
+  - name: check if shrot exists
+    command: test -d $shrot_home/$shrot
+
+  - name: check current date
+    command: date +%Y%m%d-%H%M%S
+    register: date
+
+  - name: shutdown shrot
+    shell: /etc/init.d/shrot stop $shrot || true
+
+  - name: archive shrot
+    command: tar --create --directory $shrot_home/$shrot --numeric-owner --gzip --file $tmpdir/shrot-$shrot-${date.stdout}.tgz .
+
+  - name: download backup
+    fetch: src=$tmpdir/shrot-$shrot-${date.stdout}.tgz dest=../../backups
+
+  - name: remote backup on host
+    command: rm -f $tmpdir/shrot-$shrot-${date.stdout}.tgz
+
+  - name: start shrot
+    shell: /etc/init.d/shrot start $shrot
+
