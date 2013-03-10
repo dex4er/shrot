@@ -21,7 +21,7 @@ info "Entering shrot $shrot_base"
 
 # unpack archive
 mkdir -p $target
-cat $archive_base | ( cd $target || die "chdir failed"; tar zx --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. )
+tar --extract --directory $target --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip --file $archive_base
 echo
 
 mount_vfs
@@ -43,7 +43,9 @@ clean_tmp
 umount_vfs
 
 # repack archive
-run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive
+run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive
 echo
+
+info "Created $archive shrot archive"
 
 remove_tmpdir

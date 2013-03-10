@@ -65,8 +65,10 @@ clean_tmp
 umount_vfs
 
 # archive
-run sh -c 'cd /; tar c . --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=.' | gzip -9 > $archive
+run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive
 echo
+
+info "Created $archive shrot archive"
 
 # clean up
 remove_tmpdir
