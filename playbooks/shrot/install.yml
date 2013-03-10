@@ -37,6 +37,10 @@
   - name: install shrot init script
     copy: src=files/etc_init.d_shrot dest=/etc/init.d/shrot mode=0755
 
+  - name: set runlevel for shrot init script
+    command: update-rc.d shrot defaults 95 05
+    when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
+
   - name: install Debian's LSB compatibility wrappers
     copy: src=files/etc_redhat-lsb_debian_compat dest=/etc/redhat-lsb/debian_compat mode=0644
     when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
