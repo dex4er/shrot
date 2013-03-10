@@ -3,12 +3,13 @@
   - name: install additional packages
     apt: name=$item
     with_items:
+    - apache2-suexec
     - git
     - git-svn
     - perl
     - rcs
     - subversion
-    - apache2-suexec
+    - zip
     - libalgorithm-diff-perl
     - libapache-htpasswd-perl
     - libauthen-sasl-perl
