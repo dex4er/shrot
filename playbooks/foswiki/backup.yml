@@ -2,14 +2,21 @@
 
 - hosts: all
 
+  vars:
+  - tmpdir: /tmp
+
   tasks:
 
+  - name: check current date
+    command: date +%Y%m%d-%H%M%S
+    register: date
+
   - name: backup foswiki
-    command: tar zcf foswiki-backup-$datetime_filename.tgz /var/lib/foswiki /var/log/foswiki /etc/foswiki
+    command: tar --create --directory /var/www/foswiki --gzip --file $tmpdir/foswiki-backup-${date.stdout}.tgz .
 
   - name: fetch backup
-    fetch: src=foswiki-backup-$datetime_filename.tgz dest=backups
+    fetch: src=$tmpdir/foswiki-backup-${date.stdout}.tgz dest=../../backups
 
   - name: remove backup from server
-    command: rm -f foswiki-backup-$datetime_filename.tgz
+    command: rm -f $tmpdir/foswiki-backup-${date.stdout}.tgz
 

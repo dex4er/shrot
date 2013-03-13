@@ -1,7 +1,7 @@
 ---
 
   - name: add user foswiki
-    user: name=foswiki system=yes shell=/bin/sh comment="Foswiki" home=/var/www/foswiki
+    user: name=foswiki system=yes shell=/bin/bash comment="Foswiki" home=/var/www/foswiki
 
   - name: fetch foswiki from github (Release01x01 branch)
     git: repo=https://github.com/foswiki/$item dest=/var/www/foswiki/$item version=Release01x01
