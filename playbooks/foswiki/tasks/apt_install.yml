@@ -4,8 +4,10 @@
     apt: name=$item
     with_items:
     - apache2-suexec
+    - cpanminus
     - git
     - git-svn
+    - make
     - perl
     - rcs
     - subversion
@@ -16,6 +18,7 @@
     - libcgi-session-perl
     - libcrypt-eksblowfish-perl
     - libcrypt-passwdmd5-perl
+    - libdate-calc-perl
     - libencode-perl
     - liberror-perl
     - libhtml-parser-perl
@@ -26,6 +29,7 @@
     - liblocale-msgfmt-perl
     - libnet-smtp-ssl-perl
     - libtext-diff-perl
+    - libtime-modules-perl
     - libunicode-maputf8-perl
     - liburi-perl
     - libwww-perl
