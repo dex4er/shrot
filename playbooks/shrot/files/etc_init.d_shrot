@@ -14,6 +14,11 @@
 #                    bring the chroot back to a working state.
 ### END INIT INFO
 #
+# chkconfig: 2345 95 05
+# description:       Activate any persistent sessions after a reboot.
+#                    Setup scripts will be run to mount filesystems and
+#                    bring the chroot back to a working state.
+#
 # Copyright © 2006-2012  Roger Leigh <rleigh@debian.org>
 # Copyright © 2007       Federico Di Gregorio <fog@debian.org>
 # Copyright © 2013       Piotr Roszatycki <dexter@debian.org>
