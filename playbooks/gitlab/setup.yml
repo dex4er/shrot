@@ -23,6 +23,8 @@
     db_username: gitlab
     db_password: gitlab
 
+    https_port: 443
+
     smtp_username: ''
     smtp_password: ''
 

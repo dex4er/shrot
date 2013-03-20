@@ -11,9 +11,23 @@ server {
   server_name localhost;     # e.g., server_name source.example.com;
   root /home/gitlab/gitlab/public;
 
+  ssl on;
+  ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+  ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+
+  ssl_session_timeout 5m;
+
+  ssl_protocols SSLv3 TLSv1;
+  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+  ssl_prefer_server_ciphers on;
+
+  error_page 497 https://$host:$server_port$request_uri;
+
   # individual nginx logs for this gitlab vhost
   access_log  /var/log/nginx/gitlab_access.log;
   error_log   /var/log/nginx/gitlab_error.log;
+
+  client_max_body_size 4G;
 
   location / {
     # serve static files from defined root folder;.
