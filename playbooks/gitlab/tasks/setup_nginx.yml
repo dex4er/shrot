@@ -1,7 +1,10 @@
 ---
 
   - name: install nginx
-    apt: pkg=nginx
+    apt: pkg=$item
+    with_items:
+    - nginx
+    - ssl-cert
 
   - name: create nginx config file
     template: src=templates/etc_nginx_sites-available_gitlab dest=/etc/nginx/sites-available/gitlab
