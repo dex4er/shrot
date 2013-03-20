@@ -4,5 +4,6 @@
     wait_for: port=$item state=stopped timeout=1
     with_items:
     - 80
+    - $https_port
     - 3306
     - 6379

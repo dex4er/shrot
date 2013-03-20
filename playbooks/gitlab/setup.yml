@@ -1,6 +1,10 @@
 ---
 
 - hosts: all
+
+  vars:
+    https_port: 443
+
   tasks:
   - include: tasks/prepare.yml
 
