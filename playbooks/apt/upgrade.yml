@@ -3,6 +3,6 @@
 - hosts: all
 
   tasks:
-  - name: apt-get update
-    apt: update=yes
+  - name: apt-get upgrade
+    apt: upgrade=yes
 

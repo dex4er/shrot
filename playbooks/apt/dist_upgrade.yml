@@ -3,6 +3,6 @@
 - hosts: all
 
   tasks:
-  - name: apt-get update
-    apt: update=dist
+  - name: apt-get dist-upgrade
+    apt: upgrade=dist
 
