@@ -11,4 +11,5 @@
     template: src=templates/etc_apt_sources.list.d_ubuntu-security-universe.list.j2 dest=/etc/apt/sources.list.d/ubuntu-security-universe.list
 
 - include: ../apt/update.yml
+- include: ../apt/dist_upgrade.yml
 

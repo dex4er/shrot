@@ -8,4 +8,5 @@
     template: src=templates/etc_apt_sources.list.d_ubuntu-security-main.list.j2 dest=/etc/apt/sources.list.d/ubuntu-security-main.list
 
 - include: ../apt/update.yml
+- include: ../apt/dist_upgrade.yml
 
