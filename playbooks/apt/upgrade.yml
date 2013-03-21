@@ -4,5 +4,5 @@
 
   tasks:
   - name: apt-get upgrade
-    apt: upgrade=yes
+    command: apt-get upgrade -u -y
 

@@ -4,5 +4,5 @@
 
   tasks:
   - name: apt-get dist-upgrade
-    apt: upgrade=dist
+    command: apt-get dist-upgrade -u -y
 
