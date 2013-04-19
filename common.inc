@@ -151,7 +151,7 @@ read_profiles() {
     export archive_base="archives/shrot-$shrot_base.tgz"
 
     config host localhost
-    config remote_port 22
+    config remote_port 0
     config remote_user root
     config ask_sudo_pass ''
 
