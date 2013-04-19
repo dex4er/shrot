@@ -14,7 +14,7 @@ case "$ansible_debug" in
     1) ansible_debug="-v";;
     2) ansible_debug="-vv";;
     3) ansible_debug="-vvv";;
-fi
+esac
 
 ANSIBLE_ASK_SUDO_PASS=${ask_sudo_pass:-} \
 ANSIBLE_HOSTS=ansible/hosts \
