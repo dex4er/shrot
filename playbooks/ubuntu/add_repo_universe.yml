@@ -6,9 +6,11 @@
 
   - name: add Ubuntu universe repository
     template: src=templates/etc_apt_sources.list.d_ubuntu-universe.list.j2 dest=/etc/apt/sources.list.d/ubuntu-universe.list
+    when_string: $ansible_distribution == 'Ubuntu'
 
   - name: add Ubuntu security universe repository
     template: src=templates/etc_apt_sources.list.d_ubuntu-security-universe.list.j2 dest=/etc/apt/sources.list.d/ubuntu-security-universe.list
+    when_string: $ansible_distribution == 'Ubuntu'
 
 - include: ../apt/update.yml
 - include: ../apt/dist_upgrade.yml

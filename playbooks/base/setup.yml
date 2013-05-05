@@ -13,6 +13,15 @@
 
   tasks:
 
+  - name: configure apt
+    template: src=templates/etc_apt_sources.list.j2 dest=/etc/apt/sources.list
+
+  - name: apt-get update
+    command: apt-get update
+
+  - name: install more essential packages
+    command: apt-get install -y python-apt sudo resolvconf
+
   - name: enable networking (/etc/network/interfaces)
     copy: src=files/etc_network_interfaces dest=/etc/network/interfaces
 
@@ -39,9 +48,6 @@
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
     when_set: $dnsdomainname
 
-  - name: configure apt
-    template: src=templates/etc_apt_sources.list.j2 dest=/etc/apt/sources.list
-
   - name: divert initctl
     command: dpkg-divert --rename /sbin/initctl
 
@@ -53,6 +59,9 @@
 
   - name: install wrapper for upstart-job
     copy: src=files/lib_init_upstart-job dest=/lib/init/upstart-job mode=0755
+
+  - name: disable parallel boot scripts on Debian
+    command: touch /etc/init.d/.legacy-bootordering
 
   - name: clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
     shell: rm -f /etc/rc[02].d/[SK][0-9][0-9]$item
@@ -158,9 +167,6 @@
 
   - name: configure syslog
     command: sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
-
-  - name: apt-get update
-    command: apt-get update
 
   - name: apt-get clean
     command: apt-get clean

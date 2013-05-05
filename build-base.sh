@@ -22,7 +22,7 @@ create_tmpdir
 $personality $debootstrap \
     --arch=$arch \
     --variant=${variant:--} \
-    --include=openssh-server,python-apt,sudo,resolvconf \
+    --include=openssh-server,python-apt \
     --foreign \
     $suite $target || die 'debootstrap failed'
 
@@ -45,14 +45,17 @@ run /debootstrap/debootstrap --second-stage
 # mount vfs
 mount_vfs
 
+# add ansible ssh keys
 install -m 0700 -d $target/root/.ssh
 install -m 0600 -o root -g root keys/id_rsa.pub $target/root/.ssh/authorized_keys_ansible
 
+# start ssh server
 run /etc/init.d/ssh start "-p$ssh_port -oAuthorizedKeysFile=%h/.ssh/authorized_keys_ansible"
 
+# run the next stage with ansible playbook
 ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/ping.yml "$@" || error "playbook for ping failed"
 
-./ansible-playbook-shrot.sh host=localhost "$@" || error "playbook $playbook failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/setup.yml "$@" || error "playbook $playbook failed"
 
 ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/clean.yml "$@" || error "playbook for clean failed"
 
