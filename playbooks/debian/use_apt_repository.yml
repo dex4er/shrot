@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: install python-software-properties
+    apt: pkg=python-software-properties
+
