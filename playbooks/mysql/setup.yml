@@ -11,5 +11,6 @@
   - name: install mysql
     apt: pkg=mysql-server,python-mysqldb,debconf-utils
 
+- include: set_port.yml
 - include: set_password.yml
 
