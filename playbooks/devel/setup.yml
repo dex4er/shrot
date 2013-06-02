@@ -1,0 +1,10 @@
+---
+
+- include: ../ubuntu/add_repo_universe.yml
+
+- hosts: all
+
+  tasks:
+  - name: install build-essential
+    apt: pkg=build-essential
+
