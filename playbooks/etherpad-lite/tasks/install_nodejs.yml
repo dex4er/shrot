@@ -1,0 +1,8 @@
+---
+
+  - name: add nodejs repository
+    apt_repository: repo=ppa:chris-lea/node.js
+
+  - name: install nodejs
+    apt: pkg=nodejs
+

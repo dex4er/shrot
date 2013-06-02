@@ -1,0 +1,39 @@
+---
+
+  - name: add user etherpad
+    user: name=etherpad system=yes shell=/bin/bash comment="Etherpad-lite" home=/home/etherpad
+
+  - name: create ~/.my.cnf config file
+    template: src=templates/home_etherpad_my_cnf.j2 dest=/home/etherpad/.my.cnf owner=etherpad group=etherpad mode=0600
+
+  - name: fetch etherpad-lite repository
+    git: repo=git://github.com/ether/etherpad-lite.git dest=/home/etherpad/etherpad-lite
+
+  - name: fix permissions of etherpad-lite
+    command: chown -R etherpad:etherpad /home/etherpad/etherpad-lite
+
+  - name: install missing nodejs libraries
+    command: script --return -a -f /tmp/etherpad-lite_setup_etherpad-lite.log -c 'sudo -u etherpad -H bin/installDeps.sh' chdir=/home/etherpad/etherpad-lite
+
+  - name: create log directory
+    file: path=/var/log/etherpad-lite owner=etherpad group=root state=directory
+
+  - name: install service init file
+    copy: src=files/etc_init_etherpad-lite.conf dest=/etc/init/etherpad-lite.conf
+
+  - name: install service init.d file
+    copy: src=files/etc_init.d_etherpad-lite dest=/etc/init.d/etherpad-lite mode=0755
+
+  - name: make service start on boot
+    command: update-rc.d etherpad-lite defaults 21
+
+  - name: install logrotate file
+    copy: src=files/etc_logrotate.d_etherpad-lite dest=/etc/logrotate.d/etherpad-lite
+
+  - name: generate session key string
+    command: perl -e 'print map { ("a".."z","A".."Z",0..9)[rand 62] } 1..10'
+    register: session_key
+
+  - name: install settings file
+    template: src=templates/etherpad-lite_settings.json.j2 dest=/home/etherpad/etherpad-lite/settings.json owner=etherpad group=etherpad
+

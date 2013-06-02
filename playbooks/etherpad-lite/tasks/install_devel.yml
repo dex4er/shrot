@@ -1,0 +1,13 @@
+---
+
+  - name: install devel packages
+    apt: pkg=$item
+    with_items:
+    - gzip
+    - git-core
+    - curl
+    - python
+    - libssl-dev
+    - pkg-config
+    - build-essential
+
