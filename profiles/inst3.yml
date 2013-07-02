@@ -2,3 +2,4 @@
 instance: 3
 ssh_port: 2223
 http_port: 8083
+mysql_port: 3309
