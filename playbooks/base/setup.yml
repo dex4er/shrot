@@ -48,18 +48,6 @@
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
     when_set: $dnsdomainname
 
-  - name: divert initctl
-    command: dpkg-divert --rename /sbin/initctl
-
-  - name: install wrapper for initctl
-    copy: src=files/sbin_initctl dest=/sbin/initctl mode=0755
-
-  - name: divert upstart-job
-    command: dpkg-divert --divert /lib/init/upstart-job.sh --rename /lib/init/upstart-job
-
-  - name: install wrapper for upstart-job
-    copy: src=files/lib_init_upstart-job dest=/lib/init/upstart-job mode=0755
-
   - name: disable parallel boot scripts on Debian
     command: touch /etc/init.d/.legacy-bootordering
 
@@ -90,9 +78,6 @@
   - name: init.d dnsdomainname.sh (tweak)
     command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/dnsdomainname.sh
 
-  - name: init.d dnsdomainname.sh (remove)
-    command: update-rc.d -f dnsdomainname.sh remove
-
   - name: init.d dnsdomainname.sh (add)
     command: update-rc.d dnsdomainname.sh start 02 S 2 .
 
@@ -102,26 +87,17 @@
   - name: init.d sudo (add)
     command: update-rc.d sudo start 75 2 3 4 5 .
 
-  - name: init.d rsyslog (install)
-    copy: src=files/etc_init.d_rsyslog dest=/etc/init.d/rsyslog.sysv mode=0755
-
   - name: init.d rsyslog (remove)
     command: update-rc.d -f rsyslog remove
 
   - name: init.d rsyslog (add)
     command: update-rc.d rsyslog start 10 2 3 4 5 . start 30 0 6 . stop 90 1 .
 
-  - name: init.d cron (install)
-    copy: src=files/etc_init.d_cron dest=/etc/init.d/cron.sysv mode=0755
-
   - name: init.d cron (remove)
     command: update-rc.d -f cron remove
 
   - name: init.d cron (add)
     command: update-rc.d cron start 89 2 3 4 5 .
-
-  - name: init.d resolvconf (install)
-    copy: src=files/etc_init.d_resolvconf dest=/etc/init.d/resolvconf.sysv mode=0755
 
   - name: init.d resolvconf (tweak)
     command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/resolvconf.sysv
@@ -131,12 +107,6 @@
 
   - name: init.d resolvconf (add)
     command: update-rc.d resolvconf start 38 S 2 . stop 89 0 6 .
-
-  - name: init_is_upstart
-    command: ln -sf /bin/false /bin/init_is_upstart
-
-  - name: init.d networking (install)
-    copy: src=files/etc_init.d_networking dest=/etc/init.d/networking.sysv mode=0755
 
   - name: init.d networking (tweak)
     command: sed -i 's/^\(# Default-Start:\).*$/\\1     S 2/' /etc/init.d/networking.sysv
