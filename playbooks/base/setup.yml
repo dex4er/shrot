@@ -10,6 +10,7 @@
     hostname: ~
     dnsdomainname: ~
     ssh_port: 2220
+    instance: 0
 
   tasks:
 
@@ -26,7 +27,7 @@
     copy: src=files/etc_network_interfaces dest=/etc/network/interfaces
 
   - name: enable networking (/etc/hosts)
-    copy: src=files/etc_hosts dest=/etc/hosts
+    template: src=templates/etc_hosts.j2 dest=/etc/hosts
 
   - name: enable networking (/etc/resolv.conf)
     template: src=templates/etc_resolv.conf.j2 dest=/etc/resolvconf/resolv.conf.d/base
