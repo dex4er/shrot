@@ -8,6 +8,9 @@
 
 ./generate-keys.sh
 
+# make this file before we gain root
+grep -qs "^localhost$" ansible/hosts || echo localhost >> ansible/hosts
+
 gain_root "$@"
 
 read_profiles "$@"
