@@ -10,11 +10,11 @@
 
   - name: set hostname
     template: src=templates/etc_hostname.j2 dest=/etc/hostname
-    when_set: $hostname
+    when: hostname is not none
 
   - name: set dnsdomainname
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
-    when_set: $dnsdomainname
+    when: dnsdomainname is not none
 
   - name: invoke dnsdomainname.sh
     service: name=dnsdomainname.sh state=restarted
