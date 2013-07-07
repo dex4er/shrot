@@ -35,22 +35,22 @@
     group: name=shrot system=yes state=present
 
   - name: create schroot shrot directory
-    file: path=/etc/schroot/shrot state=directory
+    file: path=/etc/schroot/shrot state=directory owner=root group=root mode=0755
 
   - name: copy schroot files (mtab)
-    copy: src=files/etc_schroot_setup.d_12mtab dest=/etc/schroot/setup.d/12mtab mode=0755
+    copy: src=files/etc_schroot_setup.d_12mtab dest=/etc/schroot/setup.d/12mtab owner=root group=root mode=0755
 
   - name: copy schroot files (copyfiles)
-    copy: src=files/etc_schroot_shrot_copyfiles dest=/etc/schroot/shrot/copyfiles mode=0644
+    copy: src=files/etc_schroot_shrot_copyfiles dest=/etc/schroot/shrot/copyfiles owner=root group=root mode=0644
 
   - name: copy schroot files (fstab)
-    copy: src=files/etc_schroot_shrot_fstab dest=/etc/schroot/shrot/fstab mode=0644
+    copy: src=files/etc_schroot_shrot_fstab dest=/etc/schroot/shrot/fstab owner=root group=root mode=0644
 
   - name: copy schroot files (nssdatabases)
-    copy: src=files/etc_schroot_shrot_nssdatabases dest=/etc/schroot/shrot/nssdatabases mode=0644
+    copy: src=files/etc_schroot_shrot_nssdatabases dest=/etc/schroot/shrot/nssdatabases owner=root group=root mode=0644
 
   - name: install shrot init script
-    copy: src=files/etc_init.d_shrot dest=/etc/init.d/shrot mode=0755
+    copy: src=files/etc_init.d_shrot dest=/etc/init.d/shrot owner=root group=root mode=0755
 
   - name: set runlevel for shrot init script (Debian/Ubuntu)
     command: update-rc.d shrot defaults 95 05
@@ -61,30 +61,34 @@
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install Redhat's LSB compatibility wrappers (directory)
-    file: path=/lib/lsb mode=0755 state=directory
+    file: path=/lib/lsb owner=root group=root mode=0755 state=directory
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install Redhat's LSB compatibility wrappers (file)
-    copy: src=files/lib_lsb_init-functions dest=/lib/lsb/init-functions mode=0644 force=no
+    copy: src=files/lib_lsb_init-functions dest=/lib/lsb/init-functions owner=root group=root mode=0644 force=no
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install Debian's LSB compatibility wrappers (directory)
-    file: path=/etc/redhat-lsb mode=0755 state=directory
+    file: path=/etc/redhat-lsb owner=root group=root mode=0755 state=directory
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install Debian's LSB compatibility wrappers (file)
-    copy: src=files/etc_redhat-lsb_debian_compat dest=/etc/redhat-lsb/debian_compat mode=0644
+    copy: src=files/etc_redhat-lsb_debian_compat dest=/etc/redhat-lsb/debian_compat owner=root group=root mode=0644
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
-  - name: create default shrot init configuration
-    shell: echo '. /etc/redhat-lsb/debian_compat' > /etc/default/shrot creates=/etc/default/shrot
+  - name: create default shrot init configuration (directory)
+    file: path=/etc/default owner=root group=root mode=0755 state=directory
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: create default shrot init configuration (file)
+    copy: src=files/etc_default_shrot dest=/etc/default/shrot owner=root group=root mode=0644
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install schroot configuration
-    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/{{shrot}}.conf
+    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/{{shrot}}.conf owner=root group=root mode=0644
 
   - name: create shrot home dir
-    file: path={{shrot_home}} state=directory
+    file: path={{shrot_home}} owner=root group=root mode=0755 state=directory
 
   - name: shutdown old shrot
     shell: /etc/init.d/shrot stop {{shrot}} || true
@@ -96,7 +100,7 @@
     copy: src=../../archives/shrot-{{shrot}}.tgz dest={{shrot_home}}/shrot-{{shrot}}.tgz
 
   - name: create new dir for shrot
-    file: path={{shrot_home}}/{{shrot}} state=directory mode=0755
+    file: path={{shrot_home}}/{{shrot}} owner=root group=root mode=0755 state=directory
 
   - name: unpack new shrot
     command: tar zxf {{shrot_home}}/shrot-{{shrot}}.tgz --numeric-owner chdir={{shrot_home}}/{{shrot}}
