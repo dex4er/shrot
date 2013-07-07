@@ -1,0 +1,36 @@
+  - name: init.d sudo (remove)
+    command: update-rc.d -f sudo remove
+
+  - name: init.d sudo (add)
+    command: update-rc.d sudo start 75 2 3 4 5 .
+
+  - name: init.d rsyslog (remove)
+    command: update-rc.d -f rsyslog remove
+
+  - name: init.d rsyslog (add)
+    command: update-rc.d rsyslog start 10 2 3 4 5 . start 30 0 6 . stop 90 1 .
+
+  - name: init.d cron (remove)
+    command: update-rc.d -f cron remove
+
+  - name: init.d cron (add)
+    command: update-rc.d cron start 89 2 3 4 5 .
+
+  - name: init.d resolvconf (tweak)
+    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/resolvconf
+
+  - name: init.d resolvconf (remove)
+    command: update-rc.d -f resolvconf remove
+
+  - name: init.d resolvconf (add)
+    command: update-rc.d resolvconf start 38 S 2 . stop 89 0 6 .
+
+  - name: init.d networking (tweak)
+    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/networking
+
+  - name: init.d networking (remove)
+    command: update-rc.d -f networking remove
+
+  - name: init.d networking (add)
+    command: update-rc.d networking start 40 S 2 . start 35 0 6 .
+

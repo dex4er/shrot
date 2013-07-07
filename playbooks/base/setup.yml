@@ -3,7 +3,6 @@
 - hosts: all
 
   vars:
-    vendor: Debian
     suite: stable
     mirror: http://ftp.debian.org/debian/
     nameserver: '8.8.8.8 8.8.4.4'
@@ -24,13 +23,13 @@
     command: apt-get install -y python-apt sudo resolvconf
 
   - name: enable networking (/etc/network/interfaces)
-    copy: src=files/etc_network_interfaces dest=/etc/network/interfaces
+    copy: src=files/etc_network_interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
 
   - name: enable networking (/etc/hosts)
-    template: src=templates/etc_hosts.j2 dest=/etc/hosts
+    template: src=templates/etc_hosts.j2 dest=/etc/hosts owner=root group=root mode=0644
 
   - name: enable networking (/etc/resolv.conf)
-    template: src=templates/etc_resolv.conf.j2 dest=/etc/resolvconf/resolv.conf.d/base
+    template: src=templates/etc_resolv.conf.j2 dest=/etc/resolvconf/resolv.conf.d/base owner=root group=root mode=0644
 
   - name: enable networking (clean resolvconf at /etc)
     file: path=/etc/resolvconf/resolv.conf.d/original state=absent
@@ -42,18 +41,18 @@
     file: path=/etc/hostname state=absent
 
   - name: set /etc/hostname
-    template: src=templates/etc_hostname.j2 dest=/etc/hostname
-    when_set: $hostname
+    template: src=templates/etc_hostname.j2 dest=/etc/hostname owner=root group=root mode=0644
+    when: hostname is defined
 
   - name: set /etc/dnsdomainname
-    template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
-    when_set: $dnsdomainname
+    template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname owner=root group=root mode=0644
+    when: dnsdomainname is defined
 
   - name: disable parallel boot scripts on Debian
     command: touch /etc/init.d/.legacy-bootordering
 
   - name: clean all init.d scripts for level 0 (setup-stop) and 2 (setup-start)
-    shell: rm -f /etc/rc[02].d/[SK][0-9][0-9]$item
+    shell: rm -f /etc/rc[02].d/[SK][0-9][0-9]{{item}}
     with_items:
     - bootlogs
     - halt
@@ -74,7 +73,7 @@
     command: update-rc.d rc.local start 99 2 3 4 5 .
 
   - name: init.d dnsdomainname.sh (install)
-    copy: src=files/etc_init.d_dnsdomainname.sh dest=/etc/init.d/dnsdomainname.sh mode=0755
+    copy: src=files/etc_init.d_dnsdomainname.sh dest=/etc/init.d/dnsdomainname.sh owner=root group=root mode=0755
 
   - name: init.d dnsdomainname.sh (tweak)
     command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
@@ -83,7 +82,7 @@
     command: update-rc.d dnsdomainname.sh start 02 S 2 .
 
   - include: tasks/tweak_debian.yml
-    when: vendor == 'Debian'
+    when: ansible_distribution == 'Debian'
 
   - name: init.d ssh (tweak)
     command: sed -i 's/^\(# Default-Stop:\).*$/\1\t\t0 6/' /etc/init.d/ssh
@@ -95,13 +94,13 @@
     command: update-rc.d ssh start 16 2 3 4 5 . stop 90 0 6 .
 
   - name: init.d rc.chroot (install)
-    copy: src=files/etc_init.d_rc.chroot dest=/etc/init.d/rc.chroot mode=0755
+    copy: src=files/etc_init.d_rc.chroot dest=/etc/init.d/rc.chroot owner=root group=root mode=0755
 
   - name: configure ssh server (SSHD_OPTS)
-    command: sed -i "s/^\(SSHD_OPTS\)=.*/\1='-p$ssh_port'/" /etc/default/ssh
+    command: sed -i "s/^\(SSHD_OPTS\)=.*/\1='-p{{ssh_port}}'/" /etc/default/ssh
 
   - name: configure ssh server (Port)
-    command: sed -i "s,^#*[[:space:]]*\(Port\).*,\1 $ssh_port," /etc/ssh/sshd_config
+    command: sed -i "s,^#*[[:space:]]*\(Port\).*,\1 {{ssh_port}}," /etc/ssh/sshd_config
 
   - name: configure syslog
     command: sed -i 's/^\$ModLoad imklog/#&/' /etc/rsyslog.conf
