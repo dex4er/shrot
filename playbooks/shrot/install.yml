@@ -2,17 +2,32 @@
 
 - hosts: all
 
+  vars:
+    http_proxy: ''
+    shrot_home: /srv/shrot
+    shrot: base
+
   tasks:
+
+  - name: download schroot RPM package
+    get_url: url=http://dl.dropbox.com/u/1202437/Schroot/schroot-1.6.5-0.el{{ansible_distribution_release|replace("Santiago","6")}}.x86_64.rpm dest={{shrot_home}}
+    environment:
+      http_proxy: "{{http_proxy}}"
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: install schroot with YUM
+    yum: name={{shrot_home}}/schroot-1.6.5-0.el{{ansible_distribution_release|replace("Santiago","6")}}.x86_64.rpm
+    environment:
+      http_proxy: "{{http_proxy}}"
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install schroot with APT
     apt: pkg=schroot state=installed
+    environment:
+      http_proxy: "{{http_proxy}}"
     when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-  - name: install schroot with RPM
-    shell: if rpm --test --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/{{ansible_distribution}}/schroot-1.6.5-0.el{{ansible_lsb.major_release}}.x86_64.rpm; then rpm --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/{{ansible_distribution}}/schroot-1.6.5-0.el{{ansible_lsb.major_release}}.x86_64.rpm; fi
-    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
-
-  - name: check if schroot is version 1.6 or greater
+  - name: check if DEB with schroot is version 1.6 or greater
     shell: dpkg --compare-versions $(dpkg-query -W -f='${Version}\n' schroot) ge 1.6 || false
     when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
@@ -66,26 +81,26 @@
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install schroot configuration
-    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/$shrot.conf
+    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/{{shrot}}.conf
 
   - name: create shrot home dir
-    file: path=$shrot_home state=directory
+    file: path={{shrot_home}} state=directory
 
   - name: shutdown old shrot
-    shell: /etc/init.d/shrot stop $shrot || true
+    shell: /etc/init.d/shrot stop {{shrot}} || true
 
   - name: delete old shrot
-    command: rm -rf $shrot_home/$shrot
+    command: rm -rf {{shrot_home}}/{{shrot}}
 
   - name: copy shrot archive
-    copy: src=../../archives/shrot-$shrot.tgz dest=$shrot_home/shrot-$shrot.tgz
+    copy: src=../../archives/shrot-{{shrot}}.tgz dest={{shrot_home}}/shrot-{{shrot}}.tgz
 
   - name: create new dir for shrot
-    file: path=$shrot_home/$shrot state=directory mode=0755
+    file: path={{shrot_home}}/{{shrot}} state=directory mode=0755
 
   - name: unpack new shrot
-    command: tar zxf $shrot_home/shrot-$shrot.tgz --numeric-owner chdir=$shrot_home/$shrot
+    command: tar zxf {{shrot_home}}/shrot-{{shrot}}.tgz --numeric-owner chdir={{shrot_home}}/{{shrot}}
 
   - name: start new shrot
-    command: /etc/init.d/shrot start $shrot
+    command: /etc/init.d/shrot start {{shrot}}
 

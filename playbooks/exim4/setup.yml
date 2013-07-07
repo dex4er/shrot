@@ -25,7 +25,7 @@
     apt: pkg=exim4,debconf-utils
 
   - name: change queue runner interval
-    command: sed -i "s/^\(QUEUEINTERVAL\)=.*/\\1='$exim_queue_interval'/" /etc/default/exim4
+    command: sed -i "s/^\(QUEUEINTERVAL\)=.*/\1='$exim_queue_interval'/" /etc/default/exim4
 
   - name: additional settings
     copy: src=files/00_exim4-localmacros dest=/etc/exim4/conf.d/main/00_exim4-localmacros

@@ -2,6 +2,8 @@
 
 - include: prepare.yml
 
+- include: ../apt/setup.yml
+
 - hosts: all
   tasks:
 
@@ -10,4 +12,6 @@
 
 - include: set_port.yml
 - include: set_password.yml
+
+- include: ../apt/cleanup.yml
 

@@ -8,5 +8,5 @@
   tasks:
 
   - name: set http proxy for APT
-    template: src=templates/etc_apt_apt.conf.d_99http_proxy.j2 dest=/etc/apt/apt.conf.d/99http_proxy
+    template: src=templates/etc_apt_apt.conf.d_99ansible-http-proxy.j2 dest=/etc/apt/apt.conf.d/99ansible-http-proxy
 

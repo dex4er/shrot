@@ -8,7 +8,7 @@
   tasks:
 
   - name: set client port
-    command: sed -i 's/^\(port.*=\) [0-9][0-9]*$/\\1 $mysql_port/' /etc/mysql/my.cnf
+    command: sed -i 's/^\(port.*=\) [0-9][0-9]*$/\1 $mysql_port/' /etc/mysql/my.cnf
 
 - include: restart.yml
 
