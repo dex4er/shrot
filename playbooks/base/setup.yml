@@ -8,6 +8,7 @@
     nameserver: '8.8.8.8 8.8.4.4'
     hostname: ~
     dnsdomainname: ~
+    http_proxy: ''
     ssh_port: 2220
     instance: 0
 
@@ -18,9 +19,13 @@
 
   - name: apt-get update
     command: apt-get update
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: install more essential packages
     command: apt-get install -y python-apt sudo resolvconf
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: enable networking (/etc/network/interfaces)
     copy: src=files/etc_network_interfaces dest=/etc/network/interfaces owner=root group=root mode=0644
