@@ -157,6 +157,7 @@ read_profiles() {
 
     config playbook playbooks/$role/setup.yml
 
+    config ansible_debug
     config ansible_playbook_arg ''
 
     export datetime="$(date +%Y-%m-%dT%H:%M:%S)"
