@@ -6,15 +6,15 @@
 
   - name: install schroot with APT
     apt: pkg=schroot state=installed
-    when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
   - name: install schroot with RPM
-    shell: if rpm --test --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/$ansible_distribution/schroot-1.6.5-0.el${ansible_lsb.major_release}.x86_64.rpm; then rpm --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/$ansible_distribution/schroot-1.6.5-0.el${ansible_lsb.major_release}.x86_64.rpm; fi
-    when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+    shell: if rpm --test --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/{{ansible_distribution}}/schroot-1.6.5-0.el{{ansible_lsb.major_release}}.x86_64.rpm; then rpm --httpproxy '$http_proxy' -Uvh http://dl.dropbox.com/u/1202437/Schroot/{{ansible_distribution}}/schroot-1.6.5-0.el{{ansible_lsb.major_release}}.x86_64.rpm; fi
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: check if schroot is version 1.6 or greater
     shell: dpkg --compare-versions $(dpkg-query -W -f='${Version}\n' schroot) ge 1.6 || false
-    when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
   - name: create shrot group
     group: name=shrot system=yes state=present
@@ -22,16 +22,16 @@
   - name: create schroot shrot directory
     file: path=/etc/schroot/shrot state=directory
 
-  - name: copy schroot files
+  - name: copy schroot files (mtab)
     copy: src=files/etc_schroot_setup.d_12mtab dest=/etc/schroot/setup.d/12mtab mode=0755
 
-  - name: copy schroot files
+  - name: copy schroot files (copyfiles)
     copy: src=files/etc_schroot_shrot_copyfiles dest=/etc/schroot/shrot/copyfiles mode=0644
 
-  - name: copy schroot files
+  - name: copy schroot files (fstab)
     copy: src=files/etc_schroot_shrot_fstab dest=/etc/schroot/shrot/fstab mode=0644
 
-  - name: copy schroot files
+  - name: copy schroot files (nssdatabases)
     copy: src=files/etc_schroot_shrot_nssdatabases dest=/etc/schroot/shrot/nssdatabases mode=0644
 
   - name: install shrot init script
@@ -39,19 +39,31 @@
 
   - name: set runlevel for shrot init script (Debian/Ubuntu)
     command: update-rc.d shrot defaults 95 05
-    when_string: $ansible_distribution == 'Debian' or $ansible_distribution == 'Ubuntu'
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
   - name: set runlevel for shrot init script (RedHat/CentOS/Fendora)
     command: chkconfig --add shrot
-    when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
-  - name: install Debian's LSB compatibility wrappers
+  - name: install Redhat's LSB compatibility wrappers (directory)
+    file: path=/lib/lsb mode=0755 state=directory
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: install Redhat's LSB compatibility wrappers (file)
+    copy: src=files/lib_lsb_init-functions dest=/lib/lsb/init-functions mode=0644 force=no
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: install Debian's LSB compatibility wrappers (directory)
+    file: path=/etc/redhat-lsb mode=0755 state=directory
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: install Debian's LSB compatibility wrappers (file)
     copy: src=files/etc_redhat-lsb_debian_compat dest=/etc/redhat-lsb/debian_compat mode=0644
-    when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: create default shrot init configuration
     shell: echo '. /etc/redhat-lsb/debian_compat' > /etc/default/shrot creates=/etc/default/shrot
-    when_string: $ansible_distribution == 'RedHat' or $ansible_distribution == 'CentOS' or $ansible_distribution == 'Fedora'
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install schroot configuration
     template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/$shrot.conf
