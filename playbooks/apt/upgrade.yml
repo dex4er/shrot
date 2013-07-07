@@ -2,7 +2,12 @@
 
 - hosts: all
 
+  vars:
+    http_proxy: ''
+
   tasks:
   - name: apt-get upgrade
     command: apt-get upgrade -u -y
+    environment:
+      http_proxy: "{{http_proxy}}"
 

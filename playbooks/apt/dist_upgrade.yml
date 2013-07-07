@@ -2,7 +2,11 @@
 
 - hosts: all
 
+  vars:
+    http_proxy: ''
+
   tasks:
   - name: apt-get dist-upgrade
     command: apt-get dist-upgrade -u -y
-
+    environment:
+      http_proxy: "{{http_proxy}}"

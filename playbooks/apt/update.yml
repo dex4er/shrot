@@ -2,7 +2,12 @@
 
 - hosts: all
 
+  vars:
+    http_proxy: ''
+
   tasks:
   - name: apt-cache update
     apt: update_cache=yes
+    environment:
+      http_proxy: "{{http_proxy}}"
 
