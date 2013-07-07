@@ -3,10 +3,16 @@
 - include: prepare.yml
 
 - hosts: all
+
+  vars:
+    http_proxy: ''
+
   tasks:
 
   - name: install mysql
     apt: pkg=mysql-server,python-mysqldb,debconf-utils
+    environment:
+      http_proxy: "{{http_proxy}}"
 
 - include: set_port.yml
 - include: set_password.yml
