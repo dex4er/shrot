@@ -3,14 +3,18 @@
 - hosts: all
 
   vars:
-    http_proxy: ''
-    timezone: GMT
+    timezone: ~
 
   tasks:
 
-  - name: set timezone
-    template: src=templates/etc_timezone.j2 dest=/etc/timezone
+  - name: set new timezone based on system setting
+    copy: src=/etc/timezone dest=/etc/timezone owner=root group=root mode=0644
+    when: timezone is none
 
-  - name: reconfigure tzdata
+  - name: set new timezone based on var
+    template: src=templates/etc_timezone.j2 dest=/etc/timezone owner=root group=root mode=0644
+    when: timezone is not none
+
+  - name: reconfigure tzdata package
     command: dpkg-reconfigure -fnoninteractive tzdata
 
