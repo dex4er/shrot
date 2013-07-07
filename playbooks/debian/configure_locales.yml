@@ -1,0 +1,40 @@
+---
+
+- hosts: all
+
+  vars:
+    tmpdir: /tmp
+    lang: ~
+    http_proxy: ''
+
+  tasks:
+
+  - name: use lang variable for locales
+    command: echo {{lang}}
+    register: v_lang
+    when: lang is not none
+
+  - name: use current LANG for locales
+    command: echo {{lookup('env','LANG')}}
+    register: v_lang
+    when: lang is none
+
+  - name: check base language
+    shell: echo {{v_lang.stdout}} | sed 's/[_.].*//'
+    register: v_lang_base
+
+  - name: check charset
+    shell: echo {{v_lang.stdout}} | sed 's/^[^.]*[.]*//; s/^$/UTF-8/'
+    register: v_charset
+
+  - name: install locales package
+    apt: name=locales
+    environment:
+      http_proxy: "{{http_proxy}}"
+
+  - name: set language
+    template: src=templates/etc_locale.gen.j2 dest=/etc/locale.gen owner=root group=root mode=0644
+
+  - name: reconfigure locales package
+    command: dpkg-reconfigure -fnoninteractive locales
+
