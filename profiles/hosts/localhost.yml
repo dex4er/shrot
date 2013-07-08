@@ -1,3 +1,4 @@
 ---
+host: localhost
 remote_user: dexter
 ask_sudo_pass: yes
