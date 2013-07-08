@@ -119,6 +119,7 @@ read_profiles() {
 
     config instance 0
     config ssh_port $((2220 + $instance))
+    config shrot_localhost 127.2.$((0 + $instance)).1
 
     config first_system_uid $((200 + 100 * $instance))
     config first_system_gid $((200 + 100 * $instance))

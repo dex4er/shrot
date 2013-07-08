@@ -3,3 +3,4 @@ instance: 1
 ssh_port: 2221
 http_port: 8081
 mysql_port: 3307
+shrot_localhost: 127.2.1.1

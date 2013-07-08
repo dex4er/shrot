@@ -2,3 +2,5 @@
 instance: 2
 ssh_port: 2222
 http_port: 8082
+mysql_port: 3308
+shrot_localhost: 127.2.2.1

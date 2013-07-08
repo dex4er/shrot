@@ -9,8 +9,9 @@
     hostname: ~
     dnsdomainname: ~
     http_proxy: ''
-    ssh_port: 2220
     instance: 0
+    ssh_port: 2220
+    shrot_localhost: 127.2.0.1
 
   tasks:
 
