@@ -22,7 +22,7 @@ Requirements
 Build system
 ------------
 
-This is system where short archive is made.
+This is system where shrot archive is made.
 
  * debootstrap
  * sudo

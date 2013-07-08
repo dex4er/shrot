@@ -6,9 +6,12 @@
 
 . $(dirname $0)/common.inc
 
-./generate-keys.sh
+# check prerequisities
+ansible --version >/dev/null 2>&1 || die "`printf 'ansible is not installed. You can install it by typing:\nsudo add-apt-repository ppa:rquillo/ansible\nsudo apt-get install ansible\n'`"
+debootstrap --version >/dev/null 2>&1 || die "`printf 'debootstrap is not installed. You can install it by typing:\nsudo apt-get install debootstrap\n'`"
 
-# make this file before we gain root
+# make these files before we gain root
+./generate-keys.sh
 grep -qs "^localhost$" ansible/hosts || echo localhost >> ansible/hosts
 
 gain_root "$@"

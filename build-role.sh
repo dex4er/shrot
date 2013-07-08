@@ -2,6 +2,9 @@
 
 . $(dirname $0)/common.inc
 
+# check prerequisities
+ansible --version >/dev/null 2>&1 || die "`printf 'ansible is not installed. You can install it by typing:\nsudo add-apt-repository ppa:rquillo/ansible\nsudo apt-get install ansible\n'`"
+
 gain_root "$@"
 
 read_profiles "$@"
