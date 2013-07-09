@@ -35,6 +35,8 @@ run /etc/init.d/ssh start
 
 ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "playbook for ping failed"
 
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/create_ssh_host_keys.yml "$@" || error "playbook for creating new ssh host keys failed"
+
 ./ansible-playbook-shrot.sh host=localhost "$@" || error "playbook $playbook failed"
 
 ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "playbook for cleanup failed"

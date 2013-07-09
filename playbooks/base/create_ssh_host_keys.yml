@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: remove old ssh host keys
+    shell: rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.*
+
+  - name: create new ssh host keys
+    command: dpkg-reconfigure -fnoninteractive openssh-server
+
