@@ -1,3 +1,5 @@
+---
+
   - name: init.d sudo (remove)
     command: update-rc.d -f sudo remove
 
