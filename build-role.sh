@@ -33,11 +33,11 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/ping.yml "$@" || error "playbook for ping failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "playbook for ping failed"
 
 ./ansible-playbook-shrot.sh host=localhost "$@" || error "playbook $playbook failed"
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/clean.yml "$@" || error "playbook for clean failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "playbook for cleanup failed"
 
 run /etc/init.d/rc.chroot stop
 

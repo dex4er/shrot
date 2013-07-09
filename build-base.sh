@@ -59,11 +59,11 @@ install -m 0600 -o root -g root keys/id_rsa.pub $target/root/.ssh/authorized_key
 run /etc/init.d/ssh start "-p$ssh_port -oAuthorizedKeysFile=%h/.ssh/authorized_keys_ansible"
 
 # run the next stage with ansible playbook
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/ping.yml "$@" || error "playbook for ping failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "playbook for ping failed"
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/setup.yml "$@" || error "playbook $playbook failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/setup.yml "$@" || error "playbook for setup failed"
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/clean.yml "$@" || error "playbook for clean failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "playbook for cleanup failed"
 
 test -x $target/etc/init.d/rc.chroot && run /etc/init.d/rc.chroot stop
 run /etc/init.d/ssh stop
