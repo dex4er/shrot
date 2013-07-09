@@ -22,7 +22,7 @@ run /etc/init.d/rc.chroot start
 
 ./ansible-shrot.sh localhost -m ping
 
-run bash -i
+run env HOME=/root bash -i
 
 run /etc/init.d/rc.chroot stop
 
