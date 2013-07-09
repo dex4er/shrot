@@ -117,5 +117,5 @@
   - name: clean up after debootstrap
     command: rm -rf /debootstrap
 
-- include: install_ssh_keys.yml
+- include: install_ssh_authorized_keys.yml
 
