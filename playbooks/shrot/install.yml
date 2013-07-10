@@ -9,6 +9,9 @@
 
   tasks:
 
+  - name: create shrot home dir
+    file: path={{shrot_home}} owner=root group=root mode=0755 state=directory
+
   - name: download schroot RPM package
     get_url: url=http://dl.dropbox.com/u/1202437/Schroot/schroot-1.6.5-0.el{{ansible_distribution_release|replace("Santiago","6")}}.x86_64.rpm dest={{shrot_home}}
     environment:
@@ -86,9 +89,6 @@
 
   - name: install schroot configuration
     template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/{{shrot}}.conf owner=root group=root mode=0644
-
-  - name: create shrot home dir
-    file: path={{shrot_home}} owner=root group=root mode=0755 state=directory
 
   - name: shutdown old shrot
     shell: /etc/init.d/shrot stop {{shrot}} || true
