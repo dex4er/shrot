@@ -1,0 +1,16 @@
+---
+
+- include: prepare.yml
+
+- hosts: all
+
+  vars:
+    http_proxy: ''
+
+  tasks:
+
+  - name: install mysql-proxy
+    apt: pkg=mysql-proxy
+    environment:
+      http_proxy: "{{http_proxy}}"
+

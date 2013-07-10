@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+
+  vars:
+    mysql_proxy_port: 4040
+    mysql_proxy_admin_port: 4041
+
+  tasks:
+
+  - name: check if TCP ports are free
+    wait_for: port={{item}} state=stopped timeout=1
+    with_items:
+    - $mysql_proxy_port
+    - $mysql_proxy_admin_port
+
