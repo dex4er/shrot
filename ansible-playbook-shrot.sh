@@ -4,7 +4,7 @@
 
 read_profiles "$@"
 
-test -f "$playbook" || die "playbook $playbook not found"
+test -f "$playbook" || die "Playbook $playbook not found"
 
 vars="$(echo $(export | sed -e 's/^declare -x //' -e 's/^export //' | egrep '^[a-z][a-z_]*='))"
 
@@ -15,6 +15,8 @@ case "$ansible_debug" in
     2) ansible_debug="-vv";;
     3) ansible_debug="-vvv";;
 esac
+
+info "Running ansible playbook $playbook on shrot $host"
 
 ANSIBLE_HOSTS=ansible/hosts \
 ANSIBLE_REMOTE_PORT=${ssh_port:-2220} \

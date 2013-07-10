@@ -9,12 +9,14 @@ gain_root "$@"
 
 read_profiles "$@"
 
-if [ "$role" = "base" ]; then
-    role=repacked
-    read_profiles "$@"
-fi
+roles=`echo $role | sed 's/,/\n/g' | uniq`
 
-test -f $playbook || die "playbook for role $role not found"
+for r in $roles; do
+
+    test $r = "base" && die "Use build-base.sh for base role"
+    test -f playbooks/$r/setup.yml || die "Playbook for $r role not found"
+
+done
 
 create_tmpdir
 
@@ -33,13 +35,25 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "playbook for ping failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "Playbook for ping failed"
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/create_ssh_host_keys.yml "$@" || error "playbook for creating new ssh host keys failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/create_ssh_host_keys.yml "$@" || error "Playbook for creating new ssh host keys failed"
 
-./ansible-playbook-shrot.sh host=localhost "$@" || error "playbook $playbook failed"
+for r in $roles; do
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "playbook for cleanup failed"
+    if [ -f playbooks/$r/prepare.yml ]; then
+        ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/prepare.yml "$@" || error "Playbook for $r prepare failed"
+    fi
+
+done
+
+for r in $roles; do
+
+    ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/setup.yml "$@" || error "Playbook for $r setup failed"
+
+done
+
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "Playbook for cleanup failed"
 
 run /etc/init.d/rc.chroot stop
 

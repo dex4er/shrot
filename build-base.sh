@@ -9,6 +9,7 @@
 # check prerequisities
 ansible --version >/dev/null 2>&1 || die "`printf 'ansible is not installed. You can install it by typing:\nsudo add-apt-repository ppa:rquillo/ansible\nsudo apt-get install ansible\n'`"
 debootstrap --version >/dev/null 2>&1 || die "`printf 'debootstrap is not installed. You can install it by typing:\nsudo apt-get install debootstrap\n'`"
+nc -h >/dev/null 2>&1 || die "`printf 'nc is not installed. You can install it by typing:\nsudo apt-get install netcat\n'`"
 
 # make these files before we gain root
 ./generate-keys.sh
@@ -19,6 +20,8 @@ gain_root "$@"
 read_profiles "$@"
 
 nc localhost $ssh_port </dev/null >/dev/null && die "TCP port $ssh_port is already used"
+
+roles=`echo $role | sed 's/,/\n/g' | uniq`
 
 info "Building shrot $shrot"
 
@@ -59,11 +62,27 @@ install -m 0600 -o root -g root keys/id_rsa.pub $target/root/.ssh/authorized_key
 run /etc/init.d/ssh start "-p$ssh_port -oAuthorizedKeysFile=%h/.ssh/authorized_keys_ansible"
 
 # run the next stage with ansible playbook
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "playbook for ping failed"
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "Playbook for ping failed"
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/setup.yml "$@" || error "playbook for setup failed"
+for r in $roles; do
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "playbook for cleanup failed"
+    if [ -f playbooks/$r/prepare.yml ]; then
+        ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/prepare.yml "$@" || error "Playbook for $r prepare failed"
+    fi
+
+done
+
+for r in $roles; do
+
+    ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/setup.yml "$@" || error "Playbook for $r setup failed"
+
+done
+
+if [ -f playbooks/local/setup.yml ]; then
+    ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/local/setup.yml "$@" || error "Playbook for local setup failed"
+fi
+
+./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "Playbook for cleanup failed"
 
 test -x $target/etc/init.d/rc.chroot && run /etc/init.d/rc.chroot stop
 run /etc/init.d/ssh stop
@@ -74,10 +93,10 @@ clean_tmp
 umount_vfs
 
 # archive
-run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive
+run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive_base
 echo
 
-info "Created $archive shrot archive"
+info "Created $archive_base shrot archive"
 
 # clean up
 remove_tmpdir

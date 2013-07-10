@@ -39,7 +39,7 @@ This is system where shrot archive is unpacked and running.
  * python2 >= 2.6
  * python-simplejson
  * python-yaml
-
+ * redhat-lsb-core (on Redhat family)
 
 Usage
 =====
@@ -57,14 +57,21 @@ Build base archive
 Build role archive
 ------------------
 
-    ./build-role.sh Debian wheezy i386 role=phpmyadmin
+    ./build-role.sh Debian wheezy i386 role=mysql,phpmyadmin
 
 Install role archive
 --------------------
 
-    ./install.sh Debian wheezy i386 role=phpmyadmin host=myhost remote_user=myuser ask_sudo_pass=yes shrot_home=/home/shrot
+    ./install.sh Debian wheezy i386 role=mysql,phpmyadmin host=myhost remote_user=myuser ask_sudo_pass=yes shrot_home=/home/shrot
 
 Parameters can be placed in profile configuration:
+
+File profile/default.yml
+
+    ---
+    vendor: Debian
+    suite: wheezy
+    arch: i386
 
 File profile/myhost.yml
 
@@ -74,4 +81,4 @@ File profile/myhost.yml
     ask_sudo_pass: yes
     shrot_home: /home/shrot
 
-    ./install.sh Ubuntu precise i386 role=phpmyadmin myhost
+    ./install.sh role=mysql,phpmyadmin myhost

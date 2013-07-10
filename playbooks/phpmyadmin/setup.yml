@@ -4,7 +4,6 @@
 
 - include: ../ubuntu/add_repo_universe.yml
 
-- include: ../mysql/setup.yml
 - include: ../apache2/setup.yml
 
 - hosts: all

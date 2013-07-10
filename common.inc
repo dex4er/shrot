@@ -124,18 +124,22 @@ read_profiles() {
     config first_system_uid $((200 + 100 * $instance))
     config first_system_gid $((200 + 100 * $instance))
 
-    test -n "$role" || config role base
 
     config http_proxy $http_proxy
     config https_proxy $https_proxy
 
-    config shrot ""
     config shrot_home ""
     config shrot_home /srv/shrot
 
+    config base base
+
+    test -n "$role" || config role base
+
+    config shrot ""
+
     if [ -z "$shrot" ]; then
-        shrot="$vendor-$suite-$arch-$role"
-        shrot_base="$vendor-$suite-$arch-base"
+        shrot="$vendor-$suite-$arch-$(echo $role | sed 's/,/-/g')"
+        shrot_base="$vendor-$suite-$arch-$base"
 
         if ! [ "$instance" = 0 ]; then
             shrot="$shrot-inst$instance"

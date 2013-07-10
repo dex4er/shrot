@@ -1,4 +1,3 @@
 ---
 
 - include: ../apache2/prepare.yml
-- include: ../mysql/prepare.yml
