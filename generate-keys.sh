@@ -24,5 +24,5 @@ mkdir -p keys
 
 # Client keys
 create_key "Creating SSH2 RSA client key; this may take some time ..." \
-    ansible@shrot \
+    ansible@`hostname` \
     keys/id_rsa -t rsa
