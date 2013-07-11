@@ -21,7 +21,7 @@ read_profiles "$@"
 
 nc localhost $ssh_port </dev/null >/dev/null && die "TCP port $ssh_port is already used"
 
-roles=`echo $role | sed 's/,/\n/g' | uniq`
+roles=`echo $base_role | sed 's/,/\n/g' | uniq`
 
 info "Building shrot $shrot"
 

@@ -133,7 +133,8 @@ read_profiles() {
 
     config base base
 
-    test -n "$role" || config role base
+    config role standard
+    config base_role base
 
     config shrot ""
 
