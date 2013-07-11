@@ -78,10 +78,6 @@ for r in $roles; do
 
 done
 
-if [ -f playbooks/local/setup.yml ]; then
-    ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/local/setup.yml "$@" || error "Playbook for local setup failed"
-fi
-
 ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "Playbook for cleanup failed"
 
 test -x $target/etc/init.d/rc.chroot && run /etc/init.d/rc.chroot stop
