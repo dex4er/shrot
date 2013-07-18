@@ -23,7 +23,7 @@ nc localhost $ssh_port </dev/null >/dev/null && die "TCP port $ssh_port is alrea
 
 roles=`echo $base_role | sed 's/,/\n/g' | uniq`
 
-info "Building shrot $shrot"
+info "Building shrot $shrot_base"
 
 create_tmpdir
 
@@ -46,7 +46,7 @@ run sed -i s/USERS_GID=[0-9]*/USERS_GID=$first_system_gid/ /etc/adduser.conf
 # additional tweaks
 run mkdir -p /run/shm
 echo 'none / chroot rw 0 0' | write /etc/mtab
-echo $shrot | write /etc/debian_chroot
+echo $shrot_base | write /etc/debian_chroot
 
 # debootstrap 2nd stage
 run /debootstrap/debootstrap --second-stage
