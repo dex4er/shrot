@@ -5,19 +5,19 @@
   tasks:
 
   - name: add Debian non-free repository
-    template: src=templates/etc_apt_sources.list.d_debian-non-free.list.j2 dest=/etc/apt/sources.list.d/debian-non-free.list
+    template: src=templates/etc_apt_sources.list.d_debian-non-free.list.j2 dest=/etc/apt/sources.list.d/debian-non-free.list owner=root group=root mode=0644
     when: ansible_distribution == 'Debian'
 
   - name: add Debian contrib repository
-    template: src=templates/etc_apt_sources.list.d_debian-contrib.list.j2 dest=/etc/apt/sources.list.d/debian-contrib.list
+    template: src=templates/etc_apt_sources.list.d_debian-contrib.list.j2 dest=/etc/apt/sources.list.d/debian-contrib.list owner=root group=root mode=0644
     when: ansible_distribution == 'Debian'
 
   - name: add Debian security non-free repository
-    template: src=templates/etc_apt_sources.list.d_debian-security-non-free.list.j2 dest=/etc/apt/sources.list.d/debian-security-non-free.list
+    template: src=templates/etc_apt_sources.list.d_debian-security-non-free.list.j2 dest=/etc/apt/sources.list.d/debian-security-non-free.list owner=root group=root mode=0644
     when: ansible_distribution == 'Debian'
 
   - name: add Debian security contrib repository
-    template: src=templates/etc_apt_sources.list.d_debian-security-contrib.list.j2 dest=/etc/apt/sources.list.d/debian-security-contrib.list
+    template: src=templates/etc_apt_sources.list.d_debian-security-contrib.list.j2 dest=/etc/apt/sources.list.d/debian-security-contrib.list owner=root group=root mode=0644
     when: ansible_distribution == 'Debian'
 
 - include: ../apt/update.yml

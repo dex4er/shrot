@@ -5,7 +5,7 @@
   tasks:
 
   - name: add Debian security repository
-    template: src=templates/etc_apt_sources.list.d_debian-security-main.list.j2 dest=/etc/apt/sources.list.d/debian-security-main.list
+    template: src=templates/etc_apt_sources.list.d_debian-security-main.list.j2 dest=/etc/apt/sources.list.d/debian-security-main.list owner=root group=root mode=0644
 
 - include: ../apt/update.yml
 
