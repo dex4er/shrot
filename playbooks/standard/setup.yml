@@ -1,0 +1,42 @@
+---
+
+- include: ../debian/setup.yml
+- include: ../ubuntu/setup.yml
+
+- include: configure_dnsdomainname.yml
+- include: configure_tzdata.yml
+- include: configure_locales.yml
+
+- include: ../apt/dist_upgrade.yml
+
+- include: use_apt_repository.yml
+
+- hosts: all
+
+  vars:
+    http_proxy: ''
+
+  tasks:
+
+  - name: install more packages
+    apt: name=$item
+    with_items:
+    - bash-completion
+    - command-not-found
+    - links
+    - man-db
+    - mc
+    - netcat-openbsd
+    - strace
+    - tcpdump
+    - telnet
+    - traceroute
+    environment:
+      http_proxy: "{{http_proxy}}"
+
+  - name: update-command-not-found
+    command: update-command-not-found
+    when: ansible_distribution == 'Debian'
+    environment:
+      http_proxy: "{{http_proxy}}"
+

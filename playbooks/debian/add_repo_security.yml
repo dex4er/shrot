@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+
+  tasks:
+
+  - name: add Debian security repository
+    template: src=templates/etc_apt_sources.list.d_debian-security-main.list.j2 dest=/etc/apt/sources.list.d/debian-security-main.list
+
+- include: ../apt/update.yml
+

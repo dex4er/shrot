@@ -2,8 +2,13 @@
 
 - hosts: all
 
+  vars:
+    http_proxy: ''
+
   tasks:
 
   - name: install python-software-properties
     apt: pkg=python-software-properties
+    environment:
+      http_proxy: "{{http_proxy}}"
 

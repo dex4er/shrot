@@ -1,25 +1,5 @@
 ---
 
-- include: ../debian/configure_tzdata.yml
-- include: ../apt/setup.yml
 - include: add_repo_security.yml
 - include: add_repo_universe.yml
-
-- hosts: all
-
-  tasks:
-
-  - name: install more packages
-    apt: name=$item
-    with_items:
-    - bash-completion
-    - command-not-found
-    - language-pack-en-base
-    - links
-    - man-db
-    - mc
-    - strace
-    - tcpdump
-    - telnet
-    - traceroute
 
