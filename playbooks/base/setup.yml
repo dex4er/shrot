@@ -24,7 +24,7 @@
       http_proxy: "{{http_proxy}}"
 
   - name: install more essential packages
-    command: apt-get install -y python-apt sudo resolvconf
+    command: apt-get install -y lsb-release python-apt sudo resolvconf
     environment:
       http_proxy: "{{http_proxy}}"
 
