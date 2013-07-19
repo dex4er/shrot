@@ -3,12 +3,13 @@
 - hosts: all
 
   vars:
-    smtp_port: 25
+    smtp_port: 2520
 
   tasks:
 
   - name: check if TCP ports are free
     wait_for: port=$item state=stopped timeout=1
     with_items:
+    - 25
     - $smtp_port
 

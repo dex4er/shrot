@@ -1,28 +1,32 @@
 ---
 
-- include: prepare.yml
-
 - hosts: all
 
   vars:
     tmpdir: /tmp
-    smtp_port: 25
+    smtp_port: 2520
     smtp_smarthost: ~
     exim_queue_interval: 5m
+
+    http_proxy: ''
 
   tasks:
 
   - name: install debconf-utils
     apt: pkg=debconf-utils
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: create debian configuration for exim4
-    template: src=templates/exim4-config.debconf.j2 dest=$tmpdir/exim4-config.debconf mode=0600
+    template: src=templates/exim4-config.debconf.j2 dest={{tmpdir}}/exim4-config.debconf owner=root group=root mode=0600
 
   - name: preconfigure exim4
     command: debconf-set-selections $tmpdir/exim4-config.debconf
 
   - name: install exim4
     apt: pkg=exim4,debconf-utils
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: change queue runner interval
     command: sed -i "s/^\(QUEUEINTERVAL\)=.*/\1='$exim_queue_interval'/" /etc/default/exim4
