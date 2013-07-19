@@ -24,6 +24,8 @@ server {
 
   error_page 497 https://$host:$server_port$request_uri;
 
+  client_max_body_size 500m;
+
   # # individual nginx logs for this gitlab vhost
   # access_log  /var/log/nginx/gitlab_access.log;
   # error_log   /var/log/nginx/gitlab_error.log;
