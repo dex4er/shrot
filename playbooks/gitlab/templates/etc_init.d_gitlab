@@ -2,7 +2,7 @@
 
 # GITLAB
 # Maintainer: @randx
-# App Version: 4.0
+# App Version: 5.2
 
 ### BEGIN INIT INFO
 # Provides:          gitlab
@@ -15,27 +15,32 @@
 ### END INIT INFO
 
 
-APP_ROOT="/home/gitlab/gitlab"
-DAEMON_OPTS="-c $APP_ROOT/config/unicorn.rb -E shrot"
+APP_ROOT="/home/git/gitlab"
+APP_USER="git"
+DAEMON_OPTS="-C $APP_ROOT/config/puma.rb"
 PID_PATH="$APP_ROOT/tmp/pids"
-UNICORN_PID="$PID_PATH/unicorn.pid"
+SOCKET_PATH="$APP_ROOT/tmp/sockets"
+SOCKET_FILE="$SOCKET_PATH/gitlab.socket"
+WEB_SERVER_PID="$PID_PATH/puma.pid"
 SIDEKIQ_PID="$PID_PATH/sidekiq.pid"
 STOP_SIDEKIQ="RAILS_ENV=shrot bundle exec rake sidekiq:stop"
 START_SIDEKIQ="RAILS_ENV=shrot bundle exec rake sidekiq:start"
-NAME="unicorn"
-DESC="Gitlab service"
-
-test -f /etc/default/gitlab && . /etc/default/gitlab
+NAME="gitlab"
+DESC="GitLab service"
 
 check_pid(){
-  if [ -f $UNICORN_PID ]; then
-    PID=`cat $UNICORN_PID`
+  if [ -f $WEB_SERVER_PID ]; then
+    PID=`cat $WEB_SERVER_PID`
     SPID=`cat $SIDEKIQ_PID`
     STATUS=`ps aux | grep $PID | grep -v grep | wc -l`
   else
     STATUS=0
     PID=0
   fi
+}
+
+execute() {
+  sudo -u $APP_USER -H bash -l -c "$1"
 }
 
 start() {
@@ -47,8 +52,9 @@ start() {
     exit 1
   else
     if [ `whoami` = root ]; then
-      sudo -u gitlab -H bash -l -c "nohup bundle exec unicorn_rails $DAEMON_OPTS  > /dev/null  2>&1 &"
-      sudo -u gitlab -H bash -l -c "mkdir -p $PID_PATH && $START_SIDEKIQ  > /dev/null  2>&1 &"
+      ! [ -e $SOCKET_FILE ] || execute "rm $SOCKET_FILE"
+      execute "RAILS_ENV=shrot bundle exec puma $DAEMON_OPTS"
+      execute "mkdir -p $PID_PATH && $START_SIDEKIQ  > /dev/null  2>&1 &"
       echo "$DESC started"
     fi
   fi
@@ -59,13 +65,14 @@ stop() {
   check_pid
   if [ "$PID" -ne 0 -a "$STATUS" -ne 0 ]; then
     ## Program is running, stop it.
-    kill -QUIT `cat $UNICORN_PID`
-    sudo -u gitlab -H bash -l -c "mkdir -p $PID_PATH && $STOP_SIDEKIQ  > /dev/null  2>&1 &"
-    rm "$UNICORN_PID" >> /dev/null
+    kill -QUIT `cat $WEB_SERVER_PID`
+    ! [ -e $SOCKET_FILE ] || execute "rm $SOCKET_FILE"
+    execute "mkdir -p $PID_PATH && $STOP_SIDEKIQ  > /dev/null  2>&1 &"
+    rm "$WEB_SERVER_PID" >> /dev/null
     echo "$DESC stopped"
   else
     ## Program is not running, exit with error.
-    echo "Error! $DESC not started!"
+    echo "Error! $DESC is not started!"
     exit 1
   fi
 }
@@ -75,10 +82,10 @@ restart() {
   check_pid
   if [ "$PID" -ne 0 -a "$STATUS" -ne 0 ]; then
     echo "Restarting $DESC..."
-    kill -USR2 `cat $UNICORN_PID`
-    sudo -u gitlab -H bash -l -c "mkdir -p $PID_PATH && $STOP_SIDEKIQ  > /dev/null  2>&1 &"
+    kill -USR2 `cat $WEB_SERVER_PID`
+    execute "mkdir -p $PID_PATH && $STOP_SIDEKIQ  > /dev/null  2>&1"
     if [ `whoami` = root ]; then
-      sudo -u gitlab -H bash -l -c "mkdir -p $PID_PATH && $START_SIDEKIQ  > /dev/null  2>&1 &"
+      execute "mkdir -p $PID_PATH && $START_SIDEKIQ  > /dev/null  2>&1 &"
     fi
     echo "$DESC restarted."
   else
@@ -91,7 +98,7 @@ status() {
   cd $APP_ROOT
   check_pid
   if [ "$PID" -ne 0 -a "$STATUS" -ne 0 ]; then
-    echo "$DESC / Unicorn with PID $PID is running."
+    echo "$DESC / Puma with PID $PID is running."
     echo "$DESC / Sidekiq with PID $SPID is running."
   else
     echo "$DESC is not running."

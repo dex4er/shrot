@@ -1,7 +1,7 @@
 ---
 
   - name: install required packages
-    apt: pkg=$item
+    apt: pkg={{item}}
     with_items:
     - bsdutils
     - build-essential
@@ -16,19 +16,23 @@
     - libxslt1-dev
     - libyaml-dev
     - zlib1g-dev
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: download Ruby
-    get_url: url=http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p327.tar.gz dest=/tmp/ruby-1.9.3-p327.tar.gz
+    get_url: url={{ruby_url}} dest=/tmp/ruby-{{ruby_version}}.tar.gz
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: unpack Ruby
-    command: tar zxf ruby-1.9.3-p327.tar.gz chdir=/tmp
+    command: tar zxf ruby-{{ruby_version}}.tar.gz chdir=/tmp
 
   - name: configure Ruby
-    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c './configure' chdir=/tmp/ruby-1.9.3-p327
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c './configure' chdir=/tmp/ruby-{{ruby_version}}
 
   - name: make Ruby
-    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make' chdir=/tmp/ruby-1.9.3-p327
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make' chdir=/tmp/ruby-{{ruby_version}}
 
   - name: install Ruby
-    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make install' chdir=/tmp/ruby-1.9.3-p327
+    command: script --return -a -f /tmp/gitlab_setup_ruby.log -c 'make install' chdir=/tmp/ruby-{{ruby_version}}
 

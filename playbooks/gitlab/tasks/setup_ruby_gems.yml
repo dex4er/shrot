@@ -1,16 +1,24 @@
 ---
 
   - name: install required packages
-    apt: pkg=$item
+    apt: pkg={{item}}
     with_items:
     - libmysqlclient-dev
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: gem install bundler
-    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install bundler --conservative'
+    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install bundler --conservative --no-ri --no-rdoc'
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: install library for charlock_holmes
     apt: pkg=libicu-dev
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: gem install charlock_holmes
-    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install charlock_holmes --version "0.6.9" --conservative'
+    command: script --return -a -f /tmp/gitlab_setup_ruby_gems.log -c 'gem install charlock_holmes --version "0.6.9.4" --conservative'
+    environment:
+      http_proxy: "{{http_proxy}}"
 

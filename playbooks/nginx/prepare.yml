@@ -8,7 +8,7 @@
   tasks:
 
   - name: check if TCP ports are free
-    wait_for: port=$item state=stopped timeout=1
+    wait_for: port={{item}} state=stopped timeout=1
     with_items:
     - 80
     - $http_port

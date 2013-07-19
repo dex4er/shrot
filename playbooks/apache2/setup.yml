@@ -1,7 +1,5 @@
 ---
 
-- include: prepare.yml
-
 - hosts: all
 
   tasks:

@@ -1,10 +1,11 @@
 ---
 
-  - name: install nginx
-    apt: pkg=$item
+  - name: install ssl certificate
+    apt: pkg={{item}}
     with_items:
-    - nginx
     - ssl-cert
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: create nginx config file
     template: src=templates/etc_nginx_sites-available_gitlab dest=/etc/nginx/sites-available/gitlab
@@ -12,6 +13,6 @@
   - name: enable nginx config
     file: src=/etc/nginx/sites-available/gitlab dest=/etc/nginx/sites-enabled/gitlab state=link
 
-  - name: start nginx
-    service: name=nginx state=started
+  - name: disable default config
+    file: path=/etc/nginx/sites-enabled/default state=absent
 

@@ -1,0 +1,22 @@
+---
+
+  - name: install required packages
+    apt: pkg=git-core
+
+  - name: add user git
+    user: name=git system=yes shell=/bin/bash comment="GitLab" home=/home/git generate_ssh_key=yes
+
+  - name: fetch gitlab-shell
+    git: repo=https://github.com/gitlabhq/gitlab-shell.git dest=/home/git/gitlab-shell version={{gitlab_shell_version}}
+    environment:
+      http_proxy: "{{http_proxy}}"
+
+  - name: create gitlab-shell config file
+    template: src=home_git_gitlab-shell_config.yml.j2 dest=/home/git/gitlab-shell/config.yml owner=git group=git mode=0644
+
+  - name: fix permissions for gitlab-shell
+    command: chown -R git:git /home/git/gitlab-shell
+
+  - name: install gitlab-shell
+    command: script --return -a -f /tmp/gitlab_setup_gitlab-shell.log -c 'sudo -u git -H ./bin/install' chdir=/home/git/gitlab-shell
+

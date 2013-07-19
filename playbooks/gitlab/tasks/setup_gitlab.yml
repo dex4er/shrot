@@ -1,49 +1,62 @@
 ---
 
   - name: fetch gitlab
-    git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/gitlab/gitlab version=4-2-stable
+    git: repo=https://github.com/gitlabhq/gitlabhq.git dest=/home/git/gitlab version={{gitlab_version}}
+    environment:
+      http_proxy: "{{http_proxy}}"
 
-  - name: fix permissions of gitlab
-    command: chown -R gitlab:gitlab /home/gitlab/gitlab
+  - name: fix permissions for gitlab
+    command: chown -R git:git /home/git/gitlab
+
+  - name: create directories for logs and sockets/pids
+    file: path=/home/git/gitlab/{{item}} owner=git group=git mode=0755 state=directory
+    with_items:
+    - log
+    - tmp
+    - tmp/pids
+    - tmp/sockets
+    - public/uploads
 
   - name: create GitLab config file
-    template: src=templates/home_gitlab_gitlab_config_gitlab.yml.j2 dest=/home/gitlab/gitlab/config/gitlab.yml owner=gitlab group=gitlab
+    template: src=templates/home_git_gitlab_config_gitlab.yml.j2 dest=/home/git/gitlab/config/gitlab.yml owner=git group=git mode=0640
 
   - name: create shrot environment config file
-    template: src=templates/home_gitlab_gitlab_config_environments_shrot.rb.j2 dest=/home/gitlab/gitlab/config/environments/shrot.rb owner=gitlab group=gitlab
+    template: src=templates/home_git_gitlab_config_environments_shrot.rb.j2 dest=/home/git/gitlab/config/environments/shrot.rb owner=git group=git mode=0640
+
+  - name: create directory for fixtures
+    file: path=/home/git/gitlab/db/fixtures/shrot owner=git group=git mode=0755 state=directory
+
+  - name: create fixtures config file
+    template: src=templates/home_git_gitlab_db_fixtures_shrot_001_admin.rb.j2 dest=/home/git/gitlab/db/fixtures/shrot/001_admin.rb owner=git group=git mode=0640
 
   - name: create mysql config file
-    template: src=templates/home_gitlab_gitlab_config_database.yml.j2 dest=/home/gitlab/gitlab/config/database.yml owner=gitlab group=gitlab
+    template: src=templates/home_git_gitlab_config_database.yml.j2 dest=/home/git/gitlab/config/database.yml owner=git group=git mode=0640
 
   - name: create resque config file
-    template: src=templates/home_gitlab_gitlab_config_rescue.yml.j2 dest=/home/gitlab/gitlab/config/rescue.yml owner=gitlab group=gitlab
+    template: src=templates/home_git_gitlab_config_rescue.yml.j2 dest=/home/git/gitlab/config/rescue.yml owner=git group=git mode=0640
 
-  - name: create Unicorn config file
-    template: src=templates/home_gitlab_gitlab_config_unicorn.rb.j2 dest=/home/gitlab/gitlab/config/unicorn.rb owner=gitlab group=gitlab
+  - name: create Puma config file
+    template: src=templates/home_git_gitlab_config_puma.rb.j2 dest=/home/git/gitlab/config/puma.rb owner=git group=git mode=0640
 
   - name: create ~/.my.cnf config file
-    template: src=templates/home_gitlab_my_cnf.j2 dest=/home/gitlab/.my.cnf owner=gitlab group=gitlab mode=0600
+    template: src=templates/home_git_my_cnf.j2 dest=/home/git/.my.cnf owner=git group=git mode=0600
 
-  - name: make directory for satellites
-    file: path=/home/gitlab/gitlab-satellites owner=gitlab group=gitlab state=directory
+  - name: create directory for satellites
+    file: path=/home/git/gitlab-satellites owner=git group=git mode=0755 state=directory
 
   - name: bundle install gitlab
-    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle install --deployment --without development postgres test' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u git -H bundle install --deployment --without development postgres test unicorn aws' chdir=/home/git/gitlab
+    environment:
+      http_proxy: "{{http_proxy}}"
 
   - name: set gitlab user name
-    command: sudo -u gitlab -H -i git config --global user.name "GitLab"
+    command: sudo -u git -H -i git config --global user.name "GitLab"
 
   - name: set gitlab user email
-    command: sudo -u gitlab -H -i git config --global user.email "gitlab@localhost"
-
-  - name: setup gitlab hooks
-    command: cp /home/gitlab/gitlab/lib/hooks/post-receive /home/git/.gitolite/hooks/common/post-receive
-
-  - name: fix permissions for gitlab hooks
-    file: path=/home/git/.gitolite/hooks/common/post-receive owner=git group=git
+    command: sudo -u git -H -i git config --global user.email "gitlab@localhost"
 
   - name: initialise database and activate advanced features
-    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H sh -c "yes yes | bundle exec rake gitlab:setup RAILS_ENV=shrot"' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u git -H sh -c "yes yes | bundle exec rake gitlab:setup RAILS_ENV=shrot"' chdir=/home/git/gitlab
 
   - name: install init script
     template: src=templates/etc_init.d_gitlab dest=/etc/init.d/gitlab mode=0755
@@ -55,10 +68,10 @@
     command: update-rc.d gitlab defaults 21
 
   - name: check application status
-    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:env:info RAILS_ENV=shrot' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u git -H bundle exec rake gitlab:env:info RAILS_ENV=shrot' chdir=/home/git/gitlab
 
   - name: run a more thorough check
-    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u gitlab -H bundle exec rake gitlab:check RAILS_ENV=shrot' chdir=/home/gitlab/gitlab
+    command: script --return -a -f /tmp/gitlab_setup_gitlab.log -c 'sudo -u git -H bundle exec rake gitlab:check RAILS_ENV=shrot' chdir=/home/git/gitlab
 
   - name: start gitlab
     service: name=gitlab state=started
