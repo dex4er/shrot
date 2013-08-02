@@ -10,9 +10,9 @@
     ruby_version: 2.0.0-p247
     ruby_url: ftp://ftp.ruby-lang.org/pub/ruby/2.0/ruby-{{ruby_version}}.tar.gz
 
-    gitlab_shell_version: v1.4.0
+    gitlab_shell_version: v1.7.0
 
-    gitlab_version: 5-3-stable
+    gitlab_version: 5-4-stable
 
     gitlab_admin_email: admin@local.host
     gitlab_admin_password: 5iveL!fe
@@ -36,3 +36,4 @@
   - include: tasks/setup_nginx.yml
 
 - include: ../nginx/restart.yml
+
