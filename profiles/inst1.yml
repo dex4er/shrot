@@ -2,5 +2,8 @@
 instance: 1
 ssh_port: 2221
 http_port: 8081
+https_port: 4431
 mysql_port: 3307
+redis_port: 6380
+smtp_port: 2521
 shrot_localhost: 127.2.1.1
