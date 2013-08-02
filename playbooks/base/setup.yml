@@ -48,11 +48,11 @@
 
   - name: set /etc/hostname
     template: src=templates/etc_hostname.j2 dest=/etc/hostname owner=root group=root mode=0644
-    when: hostname is defined
+    when: hostname is not none
 
   - name: set /etc/dnsdomainname
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname owner=root group=root mode=0644
-    when: dnsdomainname is defined
+    when: dnsdomainname is not none
 
   - name: disable parallel boot scripts on Debian
     command: touch /etc/init.d/.legacy-bootordering
@@ -77,15 +77,6 @@
 
   - name: init.d rc.local (add)
     command: update-rc.d rc.local start 99 2 3 4 5 .
-
-  - name: init.d dnsdomainname.sh (install)
-    copy: src=files/etc_init.d_dnsdomainname.sh dest=/etc/init.d/dnsdomainname.sh owner=root group=root mode=0755
-
-  - name: init.d dnsdomainname.sh (tweak)
-    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
-
-  - name: init.d dnsdomainname.sh (add)
-    command: update-rc.d dnsdomainname.sh start 02 S 2 .
 
   - include: tasks/tweak_debian.yml
     when: ansible_distribution == 'Debian'

@@ -16,6 +16,15 @@
     template: src=templates/etc_dnsdomainname.j2 dest=/etc/dnsdomainname
     when: dnsdomainname is not none
 
+  - name: init.d dnsdomainname.sh (install)
+    copy: src=files/etc_init.d_dnsdomainname.sh dest=/etc/init.d/dnsdomainname.sh owner=root group=root mode=0755
+
+  - name: init.d dnsdomainname.sh (tweak)
+    command: sed -i 's/^\(# Default-Start:\).*$/\1     S 2/' /etc/init.d/dnsdomainname.sh
+
+  - name: init.d dnsdomainname.sh (add)
+    command: update-rc.d dnsdomainname.sh start 02 S 2 .
+
   - name: invoke dnsdomainname.sh
     service: name=dnsdomainname.sh state=restarted
 

@@ -1,7 +1,7 @@
 ---
 
-- include: ../debian/setup.yml
-- include: ../ubuntu/setup.yml
+#- include: ../debian/setup.yml
+#- include: ../ubuntu/setup.yml
 
 - include: configure_dnsdomainname.yml
 - include: configure_tzdata.yml
@@ -23,10 +23,12 @@
     with_items:
     - bash-completion
     - command-not-found
+    - htop
     - links
     - man-db
     - mc
     - netcat-openbsd
+    - pv
     - strace
     - tcpdump
     - telnet
