@@ -80,6 +80,21 @@ end_sessions()
     log_end_msg 0
 }
 
+shell_session()
+{
+    shrot="$1"
+    shift
+    if [ -n "$shrot" ]; then
+      if schroot --list --all-sessions --quiet | grep -qs "^session:shrot-$shrot$" ; then
+        $SCHROOT --chroot=session:shrot-$shrot --run-session -- "$@"
+      else
+        echo "E: session:$shrot: Not started" >&2
+      fi
+    else
+      echo "E: Missing argument" >&2
+    fi
+}
+
 case "$1" in
     start|restart|force-reload)
         shift
@@ -97,9 +112,13 @@ case "$1" in
             exit 3
         fi
         ;;
+    shell)
+        shift
+        shell_session "$@"
+        ;;
     *)
         N=/etc/init.d/$NAME
-        echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
+        echo "Usage: $N {start|stop|restart|force-reload|status|shell}" >&2
         exit 1
         ;;
 esac
