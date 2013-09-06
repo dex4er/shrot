@@ -1,0 +1,7 @@
+---
+instance: 5
+ssh_port: 2225
+http_port: 8085
+mysql_port: 3311
+smtp_port: 2530
+shrot_localhost: 127.2.5.1
