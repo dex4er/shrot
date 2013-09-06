@@ -1,0 +1,21 @@
+---
+
+- include: prepare.yml
+
+- include: ../mysql/setup.yml
+- include: ../phpmyadmin/setup.yml
+
+- hosts: all
+
+  vars:
+    mediawiki_version: 1.21.1
+
+    mediawiki_username: admin
+    mediawiki_password: admin
+
+  tasks:
+  - include: tasks/install_packages.yml
+  - include: tasks/install_mediawiki.yml
+
+- include: ../apache2/restart.yml
+

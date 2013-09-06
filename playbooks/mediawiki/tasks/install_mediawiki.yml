@@ -1,0 +1,20 @@
+---
+
+  - name: add user mediawiki
+    user: name=mediawiki system=yes shell=/bin/bash comment="mediawiki" home=/var/www/mediawiki
+
+  - name: fetch mediawiki from github (Release01x01 branch)
+    git: repo=https://gerrit.wikimedia.org/r/p/mediawiki/core.git dest=/var/www/mediawiki/core version={{mediawiki_version}}
+
+  - name: fix ownership of mediawiki directories
+    command: chown -R mediawiki:mediawiki /var/www/mediawiki/core
+
+  - name: enable mod_rewrite
+    command: a2enmod rewrite
+
+  - name: configure php5
+    copy: src=files/apache2_mediawiki.conf dest=/etc/apache2/conf.d/mediawiki.conf
+
+  - name: configure apache2
+    copy: src=files/php5_mediawiki.conf dest=/etc/php5/conf.d/mediawiki.conf
+
