@@ -1,8 +1,19 @@
 ---
 
-  - name: add nodejs repository
-    apt_repository: repo=ppa:chris-lea/node.js
+  - name: download nodejs
+    get_url: url={{nodejs_url}} dest=/tmp/node-{{nodejs_version}}.tar.gz
+    environment:
+      http_proxy: "{{http_proxy}}"
+
+  - name: unpack nodejs
+    command: tar zxf node-{{nodejs_version}}.tar.gz chdir=/tmp
+
+  - name: configure nodejs
+    command: script --return -a -f /tmp/etherpad-lite_configure_nodejs.log -c './configure' chdir=/tmp/node-{{nodejs_version}}
+
+  - name: make nodejs
+    command: script --return -a -f /tmp/etherpad-lite_configure_nodejs.log -c 'make' chdir=/tmp/node-{{nodejs_version}}
 
   - name: install nodejs
-    apt: pkg=nodejs
+    command: script --return -a -f /tmp/etherpad-lite_configure_nodejs.log -c 'make install' chdir=/tmp/node-{{nodejs_version}}
 

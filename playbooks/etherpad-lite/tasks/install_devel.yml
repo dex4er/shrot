@@ -10,4 +10,6 @@
     - libssl-dev
     - pkg-config
     - build-essential
+    environment:
+      http_proxy: "{{http_proxy}}"
 

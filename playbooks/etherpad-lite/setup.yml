@@ -1,16 +1,15 @@
 ---
 
 - include: prepare.yml
-- include: ../mysql/prepare.yml
-
-- include: ../ubuntu/add_repo_universe.yml
-- include: ../debian/use_apt_repository.yml
 
 - include: ../mysql/setup.yml
 
 - hosts: all
 
   vars:
+    nodejs_version: v0.10.18
+    nodejs_url: http://nodejs.org/dist/{{nodejs_version}}/node-{{nodejs_version}}.tar.gz
+
     db_username: etherpad
     db_password: etherpad
 
@@ -18,9 +17,11 @@
 
     http_port: 8080
 
+    http_proxy: ''
+
   tasks:
-  - include: tasks/install_nodejs.yml
   - include: tasks/install_devel.yml
+  - include: tasks/install_nodejs.yml
   - include: tasks/install_abiword.yml
   - include: tasks/setup_mysql.yml
   - include: tasks/setup_etherpad-lite.yml
