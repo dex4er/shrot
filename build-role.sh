@@ -62,7 +62,7 @@ clean_tmp
 umount_vfs
 
 # repack archive
-run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive
+run tar --create --directory / --numeric-owner --one-file-system --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive
 echo
 
 info "Created $archive shrot archive"

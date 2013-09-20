@@ -89,7 +89,7 @@ clean_tmp
 umount_vfs
 
 # archive
-run tar --create --directory / --numeric-owner --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive_base
+run tar --create --directory / --numeric-owner --one-file-system --checkpoint=100 --checkpoint-action=ttyout=. --gzip . > $archive_base
 echo
 
 info "Created $archive_base shrot archive"
