@@ -11,6 +11,7 @@ info() {
 die() {
     echo "E: $*" 1>&2
     run test -x /etc/init.d/rc.chroot >/dev/null 2>&1 && run /etc/init.d/rc.chroot stop >/dev/null 2>&1
+    run test -x /etc/init.d/ssh >/dev/null 2>&1 && run /etc/init.d/ssh stop >/dev/null 2>&1
     umount_vfs >/dev/null 2>&1
     remove_tmpdir
     exit 1
@@ -198,4 +199,5 @@ remove_tmpdir() {
     if [ -n "$target" ] && ! [ "$target" = "/" ] && [ -d "$target" ]; then
         rm -rf "$target"
     fi
+    rm -rf /tmp/ansible-ssh-localhost-$ssh_port-root
 }
