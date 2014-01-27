@@ -13,9 +13,7 @@ host=localhost
 grep -qs "^$host$" ansible/hosts || echo $host >> ansible/hosts
 
 case "$ansible_debug" in
-    1) ansible_debug="-v";;
-    2) ansible_debug="-vv";;
-    3) ansible_debug="-vvv";;
+    [1-4]) ansible_debug=-$(perl -e "print 'v' x $ansible_debug");;
 esac
 
 info "Running ansible playbook $playbook on local"
