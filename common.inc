@@ -133,9 +133,15 @@ read_profiles() {
     config shrot_home /srv/shrot
 
     config base base
+    config base_role base
 
     config role standard
-    config base_role base
+
+    if [ "$role" = "standard" ] && [ -z "$playbook" ]; then
+        config playbook playbooks/base/ping.yml
+    else
+        config playbook playbooks/$role/setup.yml
+    fi
 
     config shrot ""
 
@@ -161,8 +167,6 @@ read_profiles() {
     config remote_port 0
     config remote_user root
     config ask_sudo_pass ''
-
-    config playbook playbooks/$role/setup.yml
 
     config ansible_debug
     config ansible_playbook_arg ''

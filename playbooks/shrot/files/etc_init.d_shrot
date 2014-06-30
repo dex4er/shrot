@@ -98,6 +98,7 @@ shell_session()
 case "$1" in
     start|restart|force-reload)
         shift
+        end_sessions "$@"
         start_sessions "$@"
         ;;
     stop)

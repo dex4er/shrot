@@ -35,25 +35,28 @@ echo $shrot | write /etc/debian_chroot
 
 run /etc/init.d/ssh start
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/ping.yml "$@" || error "Playbook for ping failed"
+# Disable checking of known hosts file
+export ANSIBLE_HOST_KEY_CHECKING=False
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/create_ssh_host_keys.yml "$@" || error "Playbook for creating new ssh host keys failed"
+./ansible-playbook-shrot.sh playbook=playbooks/base/ping.yml "$@" || error "Playbook for ping failed"
+
+./ansible-playbook-shrot.sh playbook=playbooks/base/create_ssh_host_keys.yml "$@" || error "Playbook for creating new ssh host keys failed"
 
 for r in $roles; do
 
     if [ -f playbooks/$r/prepare.yml ]; then
-        ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/prepare.yml "$@" || error "Playbook for $r prepare failed"
+        ./ansible-playbook-shrot.sh playbook=playbooks/$r/prepare.yml "$@" || error "Playbook for $r prepare failed"
     fi
 
 done
 
 for r in $roles; do
 
-    ./ansible-playbook-shrot.sh host=localhost playbook=playbooks/$r/setup.yml "$@" || error "Playbook for $r setup failed"
+    ./ansible-playbook-shrot.sh playbook=playbooks/$r/setup.yml "$@" || error "Playbook for $r setup failed"
 
 done
 
-./ansible-playbook-shrot.sh host=localhost playbook=playbooks/base/cleanup.yml "$@" || error "Playbook for cleanup failed"
+./ansible-playbook-shrot.sh playbook=playbooks/base/cleanup.yml "$@" || error "Playbook for cleanup failed"
 
 run /etc/init.d/rc.chroot stop
 
