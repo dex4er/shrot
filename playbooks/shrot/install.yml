@@ -89,7 +89,7 @@
     when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
 
   - name: install schroot configuration
-    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/{{shrot}}.conf owner=root group=root mode=0644
+    template: src=templates/etc_schroot_chroot.d_shrot.conf.j2 dest=/etc/schroot/chroot.d/shrot-{{shrot}}.conf owner=root group=root mode=0644
 
   - name: shutdown old shrot
     shell: /etc/init.d/shrot stop {{shrot}} || true

@@ -11,16 +11,15 @@ vars="$(echo $(export | sed -e 's/^declare -x //' -e 's/^export //' | egrep '^[a
 grep -qs "^$host$" ansible/hosts || echo $host >> ansible/hosts
 
 case "$ansible_debug" in
-    1) ansible_debug="-v";;
-    2) ansible_debug="-vv";;
-    3) ansible_debug="-vvv";;
+    [0-9]) ansible_debug=-`perl -e "print 'v' x $ansible_debug"`;;
 esac
 
 info "Running ansible playbook $playbook on shrot $host"
 
 ANSIBLE_HOSTS=ansible/hosts \
-ANSIBLE_REMOTE_PORT=${ssh_port:-2220} \
+ANSIBLE_HOST_KEY_CHECKING=False \
 ANSIBLE_PRIVATE_KEY_FILE=keys/id_rsa \
+ANSIBLE_REMOTE_PORT=${ssh_port:-2220} \
 ANSIBLE_REMOTE_TEMP=/tmp/ansible-root \
 ANSIBLE_REMOTE_USER=root \
 ANSIBLE_TRANSPORT=ssh \

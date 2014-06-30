@@ -23,6 +23,9 @@ nc localhost $ssh_port </dev/null >/dev/null && die "TCP port $ssh_port is alrea
 
 roles=`echo $base_role | sed 's/,/\n/g' | uniq`
 
+# additional ansible settings
+export ANSIBLE_HOST_KEY_CHECKING=no
+
 info "Building shrot $shrot_base"
 
 create_tmpdir
